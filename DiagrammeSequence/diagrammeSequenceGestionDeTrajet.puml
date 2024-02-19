@@ -1,0 +1,22 @@
+@startuml
+!theme plain
+
+actor Conducteur
+participant "Système Front-end" as Frontend
+participant "Serveur d'Application" as Backend
+participant "Base de Données" as Database
+
+Conducteur -> Frontend : Se connecte et accède à l'espace de gestion des trajets
+Frontend -> Backend : Envoie la demande de création de trajet
+Backend -> Database : Reçoit les détails du trajet et les enregistre
+Database -> Backend : Confirme l'enregistrement du trajet
+Backend -> Frontend : Envoie la confirmation de création
+Frontend -> Conducteur : Affiche la confirmation au Conducteur
+Conducteur -> Frontend : Gère les réservations (accepte/refuse)
+Frontend -> Backend : Transmet les actions de gestion des réservations
+Backend -> Database : Met à jour la Base de Données selon les actions
+Database -> Backend : Confirme la mise à jour des réservations
+Backend -> Frontend : Envoie la confirmation de mise à jour
+Frontend -> Conducteur : Affiche le statut de mise à jour des réservations
+
+@enduml

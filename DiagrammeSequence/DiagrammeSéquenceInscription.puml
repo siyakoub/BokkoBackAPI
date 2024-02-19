@@ -1,0 +1,17 @@
+@startuml
+participant Utilisateur
+participant "Système Front-end" as Frontend
+participant "Serveur d'Application" as Backend
+participant "Base de Données" as Database
+
+Utilisateur -> Frontend : Démarre le processus d'inscription
+Frontend -> Utilisateur : Demande les informations d'inscription (nom, email, mot de passe)
+Utilisateur -> Frontend : Soumet les informations d'inscription
+Frontend -> Backend : Valide les données côté client et envoie les données d'inscription
+Backend -> Database : Vérifie si l'utilisateur existe
+Database -> Backend : Confirme que l'utilisateur n'existe pas
+Backend -> Database : Crée un nouveau compte utilisateur et stocke les informations
+Database -> Backend : Confirme la création du compte
+Backend -> Frontend : Envoie une confirmation d'inscription
+Frontend -> Utilisateur : Affiche la confirmation d'inscription
+@enduml

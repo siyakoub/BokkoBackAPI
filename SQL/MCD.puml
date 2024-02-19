@@ -1,0 +1,86 @@
+@startuml
+!theme plain
+
+entity "Utilisateur" as Utilisateur {
+  + idUtilisateur: int
+  nom: string
+  prenom: string
+  email: string
+  motDePasse: string
+  telephone: string
+  dateInscription: datetime
+  statut: string
+}
+
+entity "Profil" as Profil {
+  + idProfil: int
+  utilisateur_idUtilisateur: int
+  bio: text
+  photo: string
+}
+
+entity "Trajet" as Trajet {
+  + idTrajet: int
+  conducteur_idUtilisateur: int
+  depart: string
+  arrivee: string
+  dateHeureDepart: datetime
+  nombrePlaces: int
+  prix: float
+  statut: string
+}
+
+entity "Reservation" as Reservation {
+  + idReservation: int
+  trajet_idTrajet: int
+  passager_idUtilisateur: int
+  nombrePlacesReservees: int
+  statut: string
+}
+
+entity "Vehicule" as Vehicule {
+  + idVehicule: int
+  conducteur_idUtilisateur: int
+  marque: string
+  modele: string
+  couleur: string
+  immatriculation: string
+  annee: int
+}
+
+entity "Paiement" as Paiement {
+  + idPaiement: int
+  reservation_idReservation: int
+  montant: float
+  dateHeure: datetime
+  methode: string
+  statut: string
+}
+
+entity "Avis" as Avis {
+  + idAvis: int
+  reservation_idReservation: int
+  note: int
+  commentaire: text
+  dateHeure: datetime
+}
+
+entity "Message" as Message {
+  + idMessage: int
+  expediteur_idUtilisateur: int
+  destinataire_idUtilisateur: int
+  contenu: text
+  dateHeureEnvoi: datetime
+  lu: boolean
+}
+
+Utilisateur ||--o{ Profil : "a un"
+Utilisateur ||--o{ Trajet : "propose"
+Trajet ||--o{ Reservation : "comprend"
+Utilisateur ||--|| Reservation : "réalise"
+Utilisateur ||--o{ Vehicule : "possède"
+Reservation ||--|| Paiement : "engendre"
+Reservation ||--o{ Avis : "reçoit"
+Utilisateur ||--o{ Message : "envoie/reçoit"
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+!theme plain
+
+actor Utilisateur
+participant "Système Front-end" as Frontend
+participant "Serveur d'Application" as Backend
+participant "Système de Paiement" as PaymentSystem
+participant "Base de Données" as Database
+
+Utilisateur -> Frontend : Sélectionne un trajet et initie le processus de réservation
+Frontend -> Utilisateur : Demande les détails de paiement
+Utilisateur -> Frontend : Fournit les informations de paiement
+Frontend -> Backend : Envoie la demande de réservation et de paiement
+Backend -> PaymentSystem : Transmet la demande de paiement
+PaymentSystem -> Backend : Traite le paiement et retourne le résultat
+alt Paiement réussi
+    Backend -> Database : Enregistre la réservation
+    Database -> Backend : Confirme l'enregistrement
+    Backend -> Frontend : Envoie la confirmation de réservation
+    Frontend -> Utilisateur : Affiche la confirmation de réservation
+else Paiement échoué
+    Backend -> Frontend : Envoie échec de paiement
+    Frontend -> Utilisateur : Affiche l'échec de paiement
+end
+@enduml
