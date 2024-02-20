@@ -2,16 +2,15 @@ package com.msyconseil.bokkobackapi.service.enumerator;
 
 import lombok.Getter;
 
-public enum UserStatusEnum {
+public enum SessionMessageEnum {
 
-    ACTIF("A"),
-    INACTIF("I"),
-    BLOCKED("B");
+    IN_PROGRESS("E"),
+    TERMINATED("T");
 
     @Getter
     private final String message;
 
-    UserStatusEnum(final String message){
+    SessionMessageEnum(final String message){
         this.message = message;
     }
 }

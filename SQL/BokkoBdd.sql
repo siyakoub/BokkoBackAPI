@@ -9,7 +9,8 @@ CREATE TABLE Utilisateur (
                         email VARCHAR(254) UNIQUE,
                         motDePasse VARCHAR(255),
                         telephone VARCHAR(20),
-                        statut ENUM('actif', 'inactif', 'bloqué')
+                        dateInscription datetime,
+                        statut char(1) not null
 );
 drop table if exists Profil;
 CREATE TABLE Profil (
@@ -93,7 +94,7 @@ create table session(
                         token char(254) not null,
                         dateDebutSession datetime not null,
                         dateFinSession datetime,
-                        actif int not null,
+                        actif char(1) not null,
                         foreign key (user_email) references Utilisateur(email)
 );
 

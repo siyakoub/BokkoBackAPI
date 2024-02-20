@@ -8,7 +8,7 @@ create function createUser(
     p_motDePasse varchar(255),
     p_telephone varchar(20),
     p_dateInscription datetime,
-    p_statut enum('actif', 'inactif')
+    p_statut char(1)
 )
 returns int
 deterministic
@@ -18,8 +18,8 @@ BEGIN
     IF user_id IS NOT NULL THEN
         RETURN -1;
     ELSE
-        insert into Utilisateur(nom, prenom, email, motDePasse, telephone, dateInscription, statut)
-            values (p_name, p_prenom, p_email, p_motDePasse, p_telephone, p_dateInscription, p_statut);
+        insert into Utilisateur(nom, prenom, email, motDePasse, telephone, statut, dateInscription)
+            values (p_name, p_prenom, p_email, p_motDePasse, p_telephone, p_statut, p_dateInscription);
         SELECT LAST_INSERT_ID() INTO user_id;
     end if;
     return user_id;
