@@ -4,7 +4,11 @@ import lombok.Getter;
 
 public enum VehiculeMessageEnum {
 
-    ERROR_CREATION_AUTO("Error during the creation of automobile.."),
+    ERROR_UPDATE_AUTO("Error during the update of the automobile..."),
+
+    ERROR_DELETE_AUTO("Error during the delete of the automobile..."),
+
+    ERROR_CREATION_AUTO("Error during the creation of automobile..."),
 
     NOT_FOUND("Véhicule non trouvé..."),
 

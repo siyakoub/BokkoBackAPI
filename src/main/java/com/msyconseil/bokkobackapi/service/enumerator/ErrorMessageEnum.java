@@ -8,6 +8,7 @@ public enum ErrorMessageEnum {
     INVALID_PARAMETER("Invalid parameter !"),
     TOKEN_EXPIRED("Token expired !"),
     ENTITY_FABRICATION_ERROR("Error during the fabrication of the entity."),
+    DTO_FABRICATION_ERROR("Error during the fabrication of the DTO..."),
     ENTITY_CREATION_ERROR("Error during the creation of the entity."),
     ENTITY_UPDATE_ERROR("Error during the update of the entity."),
     ENTITY_MANUFACTURING_ERROR("Error during the manufacturing of the entity."),

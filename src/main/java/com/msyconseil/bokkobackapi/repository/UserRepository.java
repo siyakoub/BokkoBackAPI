@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<UserModel, Integer>{
     public UserModel findByEmail(@Param("email") String email);
 
     @Query(value = "select * from Utilisateur where email = :email and actif = 'A'", nativeQuery = true)
-    public UserModel findByEmailAndActif(@Param("email") String email);
+    public UserModel findByEmailAndActive(@Param("email") String email);
 
     @Query(value = "select * from Utilisateur where email = :email and actif = 'B'", nativeQuery = true)
     public UserModel findByEmailAndBlocked(@Param("email") String email);

@@ -8,7 +8,7 @@ create function createUser(
     p_motDePasse varchar(255),
     p_telephone varchar(20),
     p_dateInscription datetime,
-    p_statut char(1)
+    p_statut enum('A', 'I', 'B')
 )
 returns int
 deterministic

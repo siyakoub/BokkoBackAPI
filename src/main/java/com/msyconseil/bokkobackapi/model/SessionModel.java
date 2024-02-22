@@ -3,7 +3,9 @@ package com.msyconseil.bokkobackapi.model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
+import com.msyconseil.bokkobackapi.utils.Utils;
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -43,6 +45,37 @@ public class SessionModel extends AbstractModel implements Serializable {
 
     public SessionModel() {
         super();
+    }
+
+    public SessionModel(UserModel userModel) {
+        this.userModel = userModel;
+        this.dateDebutSession = LocalDateTime.now();
+        this.dateFinSession = this.dateDebutSession.plusHours(24);
+        this.actif = "E";
+    }
+
+    private void createCode() {
+        this.setToken(Utils.generateUUID());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Objects.hash(token);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SessionModel other = (SessionModel) obj;
+        return Objects.equals(token, other.token);
     }
 
     @Override

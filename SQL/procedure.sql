@@ -73,7 +73,7 @@ create definer=`root`@`localhost` procedure `sp_createProfil`(
     in p_motDePasse varchar(255),
     in p_telephone varchar(20),
     in p_dateInscription datetime,
-    in p_statut enum('actif', 'inactif'),
+    in p_statut enum('A', 'I', 'B'),
     in p_biographie text,
     in p_photo varchar(255)
 )

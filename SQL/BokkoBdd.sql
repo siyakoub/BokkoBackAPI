@@ -10,7 +10,7 @@ CREATE TABLE Utilisateur (
                         motDePasse VARCHAR(255),
                         telephone VARCHAR(20),
                         dateInscription datetime,
-                        statut char(1) not null
+                        statut enum('A', 'I', 'B') not null
 );
 drop table if exists Profil;
 CREATE TABLE Profil (

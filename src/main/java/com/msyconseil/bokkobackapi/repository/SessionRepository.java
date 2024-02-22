@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface SessionRepository extends JpaRepository<SessionModel, Integer> {
 
-    @Query(value = "select * from session where token = :token and user_email = :email", nativeQuery = true)
-    public SessionModel findByTokenAndEmail(@Param("token") String token, @Param("email") String email);
+    @Query(value = "select * from session where token = :token", nativeQuery = true)
+    public SessionModel findByToken(@Param("token") String token);
 
     @Query(value = "select * from session where actif = 'E'", nativeQuery = true)
     public List<SessionModel> findAllActif();
