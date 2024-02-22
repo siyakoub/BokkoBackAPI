@@ -66,8 +66,9 @@ CREATE TABLE Paiement (
 drop table if exists Avis;
 CREATE TABLE Avis (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        reservation_idReservation INT,
-                        note INT,
+                        reservation_idReservation INT not null,
+                        utilisateur_idUtilisateur int not null,
+                        note INT not null,
                         commentaire TEXT,
                         dateHeure DATETIME,
                         FOREIGN KEY (reservation_idReservation) REFERENCES Reservation(id)

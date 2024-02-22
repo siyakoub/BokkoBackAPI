@@ -167,11 +167,12 @@ delimiter //
 drop procedure if exists sp_createAvis;
 create definer=`root`@`localhost` procedure `sp_createAvis`(
     in p_reservation_id int,
+    in p_utilisateur_idUtilisateur int,
     in p_note int,
     in p_commentaire text,
     in p_dateHeure datetime
 )
 begin
-    insert into Avis(reservation_idReservation, note, commentaire, dateHeure) values (p_reservation_id, p_note, p_commentaire, p_dateHeure);
+    insert into Avis(reservation_idReservation, utilisateur_idUtilisateur, note, commentaire, dateHeure) values (p_reservation_id, p_utilisateur_idUtilisateur, p_note, p_commentaire, p_dateHeure);
 end; //
 delimiter ;

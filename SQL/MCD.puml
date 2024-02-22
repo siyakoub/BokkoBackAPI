@@ -1,86 +1,100 @@
 @startuml
 !theme plain
 
-entity "Utilisateur" as Utilisateur {
-  + idUtilisateur: int
-  nom: string
-  prenom: string
-  email: string
-  motDePasse: string
-  telephone: string
-  dateInscription: datetime
-  statut: string
+' Entités
+entity Utilisateur {
+    id : INT
+    nom : VARCHAR
+    prenom : VARCHAR
+    email : VARCHAR[254]
+    motDePasse : VARCHAR
+    telephone : VARCHAR[20]
+    dateInscription : DATETIME
+    statut : ENUM
 }
 
-entity "Profil" as Profil {
-  + idProfil: int
-  utilisateur_idUtilisateur: int
-  bio: text
-  photo: string
+entity Profil {
+    id : INT
+    utilisateur_idUtilisateur : INT
+    bio : TEXT
+    photo : VARCHAR
 }
 
-entity "Trajet" as Trajet {
-  + idTrajet: int
-  conducteur_idUtilisateur: int
-  depart: string
-  arrivee: string
-  dateHeureDepart: datetime
-  nombrePlaces: int
-  prix: float
-  statut: string
+entity Trajet {
+    id : INT
+    conducteur_idUtilisateur : INT
+    depart : VARCHAR
+    arrivee : VARCHAR
+    dateHeureDepart : DATETIME
+    nombrePlaces : INT
+    prix : FLOAT
+    statut : ENUM
 }
 
-entity "Reservation" as Reservation {
-  + idReservation: int
-  trajet_idTrajet: int
-  passager_idUtilisateur: int
-  nombrePlacesReservees: int
-  statut: string
+entity Reservation {
+    id : INT
+    trajet_idTrajet : INT
+    passager_idUtilisateur : INT
+    nombrePlacesReservees : INT
+    statut : ENUM
 }
 
-entity "Vehicule" as Vehicule {
-  + idVehicule: int
-  conducteur_idUtilisateur: int
-  marque: string
-  modele: string
-  couleur: string
-  immatriculation: string
-  annee: int
+entity Vehicule {
+    id : INT
+    conducteur_idUtilisateur : INT
+    marque : VARCHAR
+    modele : VARCHAR
+    couleur : VARCHAR
+    immatriculation : VARCHAR
+    annee : INT
 }
 
-entity "Paiement" as Paiement {
-  + idPaiement: int
-  reservation_idReservation: int
-  montant: float
-  dateHeure: datetime
-  methode: string
-  statut: string
+entity Paiement {
+    id : INT
+    reservation_idReservation : INT
+    montant : FLOAT
+    dateHeure : DATETIME
+    methode : ENUM
+    statut : ENUM
 }
 
-entity "Avis" as Avis {
-  + idAvis: int
-  reservation_idReservation: int
-  note: int
-  commentaire: text
-  dateHeure: datetime
+entity Avis {
+    id : INT
+    reservation_idReservation : INT
+    utilisateur_idUtilisateur : INT
+    note : INT
+    commentaire : TEXT
+    dateHeure : DATETIME
 }
 
-entity "Message" as Message {
-  + idMessage: int
-  expediteur_idUtilisateur: int
-  destinataire_idUtilisateur: int
-  contenu: text
-  dateHeureEnvoi: datetime
-  lu: boolean
+entity Message {
+    id : INT
+    expediteur_idUtilisateur : INT
+    destinataire_idUtilisateur : INT
+    contenu : TEXT
+    dateHeureEnvoi : DATETIME
+    lu : BOOLEAN
 }
 
-Utilisateur ||--o{ Profil : "a un"
-Utilisateur ||--o{ Trajet : "propose"
-Trajet ||--o{ Reservation : "comprend"
-Utilisateur ||--|| Reservation : "réalise"
-Utilisateur ||--o{ Vehicule : "possède"
-Reservation ||--|| Paiement : "engendre"
-Reservation ||--o{ Avis : "reçoit"
-Utilisateur ||--o{ Message : "envoie/reçoit"
+entity Session {
+    id : INT
+    user_email : CHAR[254]
+    token : CHAR[254]
+    dateDebutSession : DATETIME
+    dateFinSession : DATETIME
+    actif : CHAR[1]
+}
+
+' Relations
+Utilisateur ||--o{ Profil : ""
+Utilisateur ||--o{ Trajet : "Conducteur"
+Utilisateur ||--o{ Reservation : "Passager"
+Utilisateur ||--o{ Vehicule : "Conducteur"
+Reservation ||--o{ Paiement : ""
+Reservation ||--o{ Avis : ""
+Utilisateur ||--o{ Avis : "Posteur"
+Utilisateur ||--o{ Message : "Expediteur"
+Utilisateur ||--o{ Message : "Destinataire"
+Utilisateur ||--o{ Session : ""
 
 @enduml

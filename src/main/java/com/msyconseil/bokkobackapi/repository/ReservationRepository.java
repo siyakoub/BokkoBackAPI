@@ -1,6 +1,7 @@
 package com.msyconseil.bokkobackapi.repository;
 
 import com.msyconseil.bokkobackapi.model.ReservationModel;
+import com.msyconseil.bokkobackapi.service.sqlstoredprocedureanswer.SqlStoredProcedureAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,5 +35,8 @@ public interface ReservationRepository extends JpaRepository<ReservationModel, I
 
     @Query(value = "select * from Reservation where statut = 'fini'", nativeQuery = true)
     public List<ReservationModel> findReservationByStatutFinished();
+
+    @Query(value = "CALL sp_createReservation(:trajet_id, :passager_id, :nb_places_reserv, :statut)", nativeQuery = true)
+    public List<SqlStoredProcedureAnswer> createNewReservation(@Param("trajet_id") int trajet_id, @Param("passager_id") int passager_id, @Param("nb_places_reserv") int nb_places_reserv, @Param("statut") String statut);
 
 }

@@ -1,6 +1,7 @@
 package com.msyconseil.bokkobackapi.repository;
 
 import com.msyconseil.bokkobackapi.model.PaiementModel;
+import com.msyconseil.bokkobackapi.service.sqlstoredprocedureanswer.SqlStoredProcedureAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +28,8 @@ public interface PaiementRepository extends JpaRepository<PaiementModel, Integer
     @Query(value = "select * from Paiement where statut = 'annulée'", nativeQuery = true)
     public List<PaiementModel> findAllPaiementByStatutCanceled();
 
+    @Query(value = "CALL sp_createPaiement(:reservation_id, :montant, NOW(), :methodPaiement, :statut)", nativeQuery = true)
+    public List<SqlStoredProcedureAnswer> createNewPaiement(@Param("reservation_id") int reservation_id, @Param("montant") float montant, @Param("methodPaiement") String methodPaiement, @Param("statut") String statut);
 
 
 }

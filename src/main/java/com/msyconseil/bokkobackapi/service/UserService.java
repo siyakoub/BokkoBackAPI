@@ -34,7 +34,7 @@ public class UserService extends AbstractService implements IService<UserModel, 
 
     @Transactional
     public UserDTO add(UserDTO userDTO) throws ErrorException {
-        if (userDTO == null) throw new ErrorException(ErrorMessageEnum.ENTITY_CREATION_ERROR);
+        if (userDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         UserModel userModel = generateEntityByDTO(userDTO);
         userModel.setPassword(Utils.hash(userDTO.getPassword()));
         userModel = userRepository.save(userModel);
@@ -92,9 +92,16 @@ public class UserService extends AbstractService implements IService<UserModel, 
         return userRepository.findByEmailAndActive(email);
     }
 
-    public UserDTO get(final Map<String, String> headers, String email) throws Exception {
-        getActiveSession(headers);
-        return generateDTOByEntity(getUserByEmail(email));
+    public CustomAnswer<UserDTO> get(final Map<String, String> headers, String email) throws ErrorException {
+        CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
+        SessionModel sessionModel = getActiveSession(headers);
+        UserModel entity = getUserByEmail(email);
+        if (entity != null) {
+            UserDTO userDTO = generateDTOByEntity(entity);
+            response.setContent(userDTO);
+            return response;
+        }
+        return new CustomAnswer<UserDTO>();
     }
 
     private void updateInformation(UserModel userModel, UserDTO dto){
@@ -108,15 +115,20 @@ public class UserService extends AbstractService implements IService<UserModel, 
         userModel.setStatut(dto.getStatut());
     }
 
-    public UserDTO edit(final Map<String, String> headers, UserDTO dto) throws Exception{
-        SessionModel sessionModel = getActiveSession(headers);
-        UserModel entity = getUserByEmail(dto.getEmail());
-
-        updateInformation(entity, dto);
-
-        entity = userRepository.save(entity);
-        if (entity != null) return generateDTOByEntity(entity);
-        return new UserDTO();
+    public CustomAnswer<UserDTO> login(UserDTO dto) throws Exception {
+        CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
+        if (dto.getEmail() == null || dto.getPassword() == null)
+            throw new Exception("Identifiant ou mot de passe manquant");
+        UserModel optional = getUserByEmail(dto.getEmail());
+        System.out.println(optional);
+        if (optional != null && Utils.compare(dto.getPassword(), optional.getPassword())){
+            UserDTO userDTO = generateDTOByEntity(optional);
+            userDTO.setToken(sessionService.add(optional).getToken());
+            response.setContent(userDTO);
+        } else {
+            response.setErrorMessage("Connexion impossible");
+        }
+        return response;
     }
 
     public CustomAnswer<Boolean> logout(final Map<String, String> headers){
@@ -131,7 +143,7 @@ public class UserService extends AbstractService implements IService<UserModel, 
         return response;
     }
 
-    public List<UserDTO> getAll(final Map<String, String> headers) throws Exception {
+    public List<UserDTO> getAll(final Map<String, String> headers) throws ErrorException {
         SessionModel sessionModel = getActiveSession(headers);
         return userRepository.findAll().parallelStream().map(userModel -> {
             try {
