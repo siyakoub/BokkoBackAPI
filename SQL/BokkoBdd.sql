@@ -4,12 +4,12 @@ USE BokkoDB;
 DROP TABLE IF EXISTS Utilisateur;
 CREATE TABLE Utilisateur (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        nom VARCHAR(255),
-                        prenom VARCHAR(255),
-                        email VARCHAR(254) UNIQUE,
-                        motDePasse VARCHAR(255),
-                        telephone VARCHAR(20),
-                        dateInscription datetime,
+                        nom VARCHAR(255) not null,
+                        prenom VARCHAR(255) not null,
+                        email VARCHAR(254) UNIQUE not null,
+                        motDePasse VARCHAR(255) not null,
+                        telephone VARCHAR(20) not null,
+                        dateInscription datetime not null,
                         statut enum('A', 'I', 'B') not null
 );
 drop table if exists Profil;

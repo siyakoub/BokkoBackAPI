@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.msyconseil.bokkobackapi.service.customanswer.CustomAnswer;
+import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
 import com.msyconseil.bokkobackapi.service.exception.ErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @DeleteMapping("/logout")
-    public CustomAnswer<Boolean> logout(@RequestHeader Map<String, String> headers) {
+    public CustomAnswer<Boolean> logout(@RequestHeader Map<String, String> headers) throws ErrorException {
         return userService.logout(headers);
     }
 
@@ -44,8 +45,8 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public List<UserDTO> getAll(@RequestHeader final Map<String, String> headers) throws ErrorException {
-        return userService.getAll(headers);
+    public CustomListAnswer<List<UserDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, int size) throws ErrorException {
+        return userService.getAll(headers, page, size);
     }
 
     @GetMapping("/")

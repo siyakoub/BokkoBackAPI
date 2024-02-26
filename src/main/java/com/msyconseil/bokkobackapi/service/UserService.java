@@ -1,25 +1,31 @@
 package com.msyconseil.bokkobackapi.service;
 
+import com.msyconseil.bokkobackapi.dto.ProfilDTO;
 import com.msyconseil.bokkobackapi.dto.UserDTO;
 import com.msyconseil.bokkobackapi.model.SessionModel;
 import com.msyconseil.bokkobackapi.model.UserModel;
 import com.msyconseil.bokkobackapi.repository.UserRepository;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomAnswer;
+import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
 import com.msyconseil.bokkobackapi.service.enumerator.ErrorMessageEnum;
+import com.msyconseil.bokkobackapi.service.enumerator.UserStatusEnum;
 import com.msyconseil.bokkobackapi.service.exception.ErrorException;
+import com.msyconseil.bokkobackapi.service.exception.UserException;
+import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.utils.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService extends AbstractService implements IService<UserModel, UserDTO> {
+public class UserService extends AbstractService<UserDTO, UserModel> implements IService<UserModel, UserDTO>, ICRUDService<UserDTO, String> {
 
     @Autowired
     UserRepository userRepository;
@@ -42,6 +48,7 @@ public class UserService extends AbstractService implements IService<UserModel, 
     }
 
     public CustomAnswer<UserDTO> update(Map<String, String> headers, UserDTO parameter, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
         SessionModel sessionModel = getActiveSession(headers);
         UserModel entity = getUserByEmail(email);
@@ -55,34 +62,108 @@ public class UserService extends AbstractService implements IService<UserModel, 
     }
 
     public CustomAnswer<UserDTO> delete(Map<String, String> headers, String email) throws ErrorException {
-        CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
-        SessionModel sessionModel = getActiveSession(headers);
-        UserModel entity = getUserByEmail(email);
-        entity.setStatut("I");
-        entity = userRepository.save(entity);
-        if (entity != null) {
-            UserDTO userDTO = generateDTOByEntity(entity);
-            response.setContent(userDTO);
-            return response;
+        if (headers == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
-        return new CustomAnswer<UserDTO>();
+
+        CustomAnswer<UserDTO> response = new CustomAnswer<>();
+        getActiveSession(headers);
+
+        try {
+            UserModel entity = getUserByEmail(email);
+
+            // Si getUserByEmail ne lance pas d'exception, l'utilisateur existe et on peut continuer
+            entity.setStatut("I");
+            UserModel updatedEntity = userRepository.save(entity);
+
+            UserDTO userDTO = generateDTOByEntity(updatedEntity);
+            response.setContent(userDTO);
+        } catch (ErrorException e) {
+            // Gestion de l'exception si l'utilisateur n'est pas trouvé
+            throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+        } catch (Exception e) {
+            // Gestion d'autres exceptions potentielles
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+
+        return response;
     }
 
     public UserDTO add(UserModel userModel) throws Exception {
         return generateDTOByEntity(userRepository.save(userModel));
     }
 
-    public CustomAnswer<UserDTO> add(final Map<String, String> headers, UserDTO userDTO) throws ErrorException, Exception {
-        if (headers == null) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+    @Override
+    public CustomAnswer<UserDTO> get(Map<String, String> headers, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+
+        // Validation de la session. Si invalide, une ErrorException est levée.
         SessionModel sessionModel = getActiveSession(headers);
 
+        // Supposons que getUserByEmail(email) pourrait retourner null si l'utilisateur n'est pas trouvé.
+        UserModel entity = getUserByEmail(email); // Utilisation directe de l'email fourni au lieu de celui de la sessionModel
+
+        if (entity == null) {
+            // Si aucun utilisateur n'est trouvé, plutôt que de retourner un objet vide,
+            // lever une exception indiquant que l'utilisateur n'est pas trouvé.
+            throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+        }
+
+        // Conversion de l'entité UserModel en DTO.
+        UserDTO userDTO = generateDTOByEntity(entity);
+
+        // Préparation et retour de la réponse.
+        CustomAnswer<UserDTO> response = new CustomAnswer<>();
+        response.setContent(userDTO);
+
+        return response;
+    }
+
+
+    @Override
+    public CustomListAnswer<List<UserDTO>> getAll(Map<String, String> headers, int page, int size) throws ErrorException {
+        if (headers == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+        getActiveSession(headers);
+
+        // Utilisation de PageRequest pour paginer les résultats de userRepository.findAll()
+        Page<UserModel> usersPage = userRepository.findAll(PageRequest.of(page, size));
+
+        List<UserDTO> userDTOs = usersPage.getContent().stream().map(userModel -> {
+            try {
+                return this.generateDTOByEntity(userModel);
+            } catch (ErrorException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+
+        // Création de l'objet CustomListAnswer et remplissage avec les données paginées
+        CustomListAnswer<List<UserDTO>> response = new CustomListAnswer<>();
+        response.setContent(userDTOs);
+        response.setActualPageNumber(usersPage.getNumber());
+        response.setTotalNumberOfPages(usersPage.getTotalPages());
+        response.setTotalNumberOfElements(usersPage.getTotalElements());
+        response.setNumberOfElementByPage(size);
+        response.setNumberOfFoundElement(userDTOs.size());
+
+        return response;
+    }
+
+
+    public CustomAnswer<UserDTO> add(final Map<String, String> headers, UserDTO userDTO) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        getActiveSession(headers);
         CustomAnswer<UserDTO> response = new CustomAnswer<>();
         try {
             UserDTO dto = add(userDTO);
             response.setContent(dto);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            e.fillInStackTrace();
             response.setErrorMessage(e.getMessage());
         }
         return response;
@@ -92,17 +173,6 @@ public class UserService extends AbstractService implements IService<UserModel, 
         return userRepository.findByEmailAndActive(email);
     }
 
-    public CustomAnswer<UserDTO> get(final Map<String, String> headers, String email) throws ErrorException {
-        CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
-        SessionModel sessionModel = getActiveSession(headers);
-        UserModel entity = getUserByEmail(email);
-        if (entity != null) {
-            UserDTO userDTO = generateDTOByEntity(entity);
-            response.setContent(userDTO);
-            return response;
-        }
-        return new CustomAnswer<UserDTO>();
-    }
 
     private void updateInformation(UserModel userModel, UserDTO dto){
         if (dto.isPasswordIsChange()){
@@ -112,46 +182,42 @@ public class UserService extends AbstractService implements IService<UserModel, 
         userModel.setFirstName(dto.getFirstName());
         userModel.setEmail(dto.getEmail());
         userModel.setPhoneNumber(dto.getPhoneNumber());
-        userModel.setStatut(dto.getStatut());
+        userModel.setStatut(dto.getStatut().getMessage());
     }
 
     public CustomAnswer<UserDTO> login(UserDTO dto) throws Exception {
         CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
-        if (dto.getEmail() == null || dto.getPassword() == null)
-            throw new Exception("Identifiant ou mot de passe manquant");
-        UserModel optional = getUserByEmail(dto.getEmail());
-        System.out.println(optional);
-        if (optional != null && Utils.compare(dto.getPassword(), optional.getPassword())){
-            UserDTO userDTO = generateDTOByEntity(optional);
-            userDTO.setToken(sessionService.add(optional).getToken());
-            response.setContent(userDTO);
-        } else {
-            response.setErrorMessage("Connexion impossible");
-        }
-        return response;
-    }
-
-    public CustomAnswer<Boolean> logout(final Map<String, String> headers){
-        CustomAnswer<Boolean> response = new CustomAnswer<Boolean>();
         try {
-            SessionModel sessionModel = getActiveSession(headers);
-            response.setContent(sessionService.destroySession(sessionModel.getToken()));
-        } catch (Exception e){
-            e.printStackTrace();
+            if (dto.getEmail() == null || dto.getPassword() == null)
+                throw new Exception("Identifiant ou mot de passe manquant");
+            UserModel optional = getUserByEmail(dto.getEmail());
+            System.out.println(optional);
+            if (optional != null && Utils.compare(dto.getPassword(), optional.getPassword())){
+                UserDTO userDTO = generateDTOByEntity(optional);
+                userDTO.setToken(sessionService.add(optional).getToken());
+                userDTO.setId(optional.getId());
+                response.setContent(userDTO);
+            } else {
+                response.setErrorMessage("Connexion impossible");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
             response.setErrorMessage(e.getMessage());
         }
         return response;
     }
 
-    public List<UserDTO> getAll(final Map<String, String> headers) throws ErrorException {
-        SessionModel sessionModel = getActiveSession(headers);
-        return userRepository.findAll().parallelStream().map(userModel -> {
-            try {
-                return this.generateDTOByEntity(userModel);
-            } catch (ErrorException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList());
+    public CustomAnswer<Boolean> logout(final Map<String, String> headers) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<Boolean> response = new CustomAnswer<Boolean>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            response.setContent(sessionService.destroySession(sessionModel.getToken()));
+        } catch (Exception e){
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
     }
 
     @Override
@@ -167,7 +233,7 @@ public class UserService extends AbstractService implements IService<UserModel, 
         entity.setEmail(dto.getEmail());
         entity.setPassword(dto.getPassword());
         entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setStatut(dto.getStatut());
+        entity.setStatut(dto.getStatut().getMessage());
         return entity;
     }
 
@@ -185,7 +251,13 @@ public class UserService extends AbstractService implements IService<UserModel, 
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setStatut(entity.getStatut());
+        if (entity.getStatut() == "B") {
+            dto.setStatut(UserStatusEnum.BLOCKED);
+        } else if (entity.getStatut() == "I") {
+            dto.setStatut(UserStatusEnum.INACTIF);
+        } else {
+            dto.setStatut(UserStatusEnum.ACTIF);
+        }
         return dto;
     }
 }

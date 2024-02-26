@@ -35,12 +35,10 @@ public class UserDTO extends AbstractDTO implements Serializable {
     @NotEmpty(message = "Le numéro de l'utilisateur est requis !")
     private String phoneNumber;
 
-    @NotEmpty(message = "Le statut de l'utilisateur est requis")
-    private String statut;
-
     private String token;
 
-    private UserStatusEnum status;
+    @NotEmpty(message = "Le statut de l'utilisateur est requis")
+    private UserStatusEnum statut;
 
     public UserDTO() {
         super();

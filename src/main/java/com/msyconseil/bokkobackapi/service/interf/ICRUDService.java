@@ -2,6 +2,7 @@ package com.msyconseil.bokkobackapi.service.interf;
 
 import com.msyconseil.bokkobackapi.service.customanswer.CustomAnswer;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
+import com.msyconseil.bokkobackapi.service.exception.ErrorException;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +15,13 @@ import java.util.Map;
 
 public interface ICRUDService <D extends Object, U> {
 
-    CustomAnswer<D> get(Map<String, String> headers, U email);
+    CustomAnswer<D> get(Map<String, String> headers, U email) throws Exception;
 
-    CustomListAnswer<List<D>> getAll(Map<String, String> headers, int page, int size);
+    CustomListAnswer<List<D>> getAll(Map<String, String> headers, int page, int size) throws Exception;
 
-    CustomAnswer<D> add(Map<String, String> headers, D parameter);
+    CustomAnswer<D> add(Map<String, String> headers, D parameter) throws Exception;
 
-    CustomAnswer<D> update(Map<String, String> headers, D parameter, U email);
+    CustomAnswer<D> update(Map<String, String> headers, D parameter, U email) throws Exception;
 
-    CustomAnswer<D> delete(Map<String, String> headers, String email);
+    CustomAnswer<D> delete(Map<String, String> headers, U email) throws Exception;
 }

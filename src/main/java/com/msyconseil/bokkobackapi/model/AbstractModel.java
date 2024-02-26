@@ -12,9 +12,9 @@ public class AbstractModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="id")
     @JsonIgnore
     @Getter @Setter
+    @Column(name ="id")
     protected Integer id;
 
     @Override

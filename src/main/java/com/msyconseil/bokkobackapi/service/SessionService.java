@@ -1,7 +1,6 @@
 package com.msyconseil.bokkobackapi.service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import com.msyconseil.bokkobackapi.repository.SessionRepository;
 import com.msyconseil.bokkobackapi.service.enumerator.ErrorMessageEnum;
@@ -49,7 +48,7 @@ public class SessionService {
         try {
             sessionRepository.delete(token);
         } catch (Exception e){
-            e.printStackTrace();
+            e.fillInStackTrace();
             return false;
         }
         return true;
