@@ -25,6 +25,13 @@ public class AvisModel extends AbstractModel implements Serializable {
 
     @Getter
     @Setter
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "utilisateur_idUtilisateur", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "bokko_ibfk_10"))
+    private UserModel userModel;
+
+    @Getter
+    @Setter
     @Column(name = "note")
     private int note;
 

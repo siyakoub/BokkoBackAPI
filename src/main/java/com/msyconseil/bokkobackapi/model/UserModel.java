@@ -42,6 +42,10 @@ public class UserModel extends AbstractModel implements Serializable{
     private String phoneNumber;
 
     @Getter @Setter
+    @Column(name = "dateInscription")
+    private LocalDateTime dateInscription;
+
+    @Getter @Setter
     @Column(name = "statut")
     private String statut;
 

@@ -36,6 +36,7 @@ entity Reservation {
     trajet_idTrajet : INT
     passager_idUtilisateur : INT
     nombrePlacesReservees : INT
+    date_reservation : INT
     statut : ENUM
 }
 

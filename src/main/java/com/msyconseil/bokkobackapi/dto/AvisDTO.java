@@ -18,6 +18,8 @@ public class AvisDTO extends AbstractDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private UserDTO userDTO;
+
     private ReservationDTO reservationDTO;
 
     private int note;

@@ -37,6 +37,11 @@ public class ReservationModel extends AbstractModel implements Serializable{
 
     @Getter
     @Setter
+    @Column(name = "date_reservation")
+    private String dateReservation;
+
+    @Getter
+    @Setter
     @Column(name = "statut")
     private String statut;
 

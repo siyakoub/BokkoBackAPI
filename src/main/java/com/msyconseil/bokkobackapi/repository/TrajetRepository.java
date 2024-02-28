@@ -13,6 +13,9 @@ public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
     @Query(value = "select * from Trajet", nativeQuery = true)
     public List<TrajetModel> findAllTrajet();
 
+    @Query(value = "select * from Trajet where conducteur_idUtilisateur = :idConducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    public TrajetModel findLastTrajetByConducteur(@Param("idConducteur") int idConducteur);
+
     @Query(value = "select * from trajet where conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByDriver(@Param("id_conducteur") int id_conducteur);
 

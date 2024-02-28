@@ -38,6 +38,7 @@ CREATE TABLE Reservation (
                         trajet_idTrajet INT,
                         passager_idUtilisateur INT,
                         nombrePlacesReservees INT,
+                        date_reservation datetime not null,
                         statut ENUM('en attente', 'confirmé', 'fini'),
                         FOREIGN KEY (trajet_idTrajet) REFERENCES Trajet(id),
                         FOREIGN KEY (passager_idUtilisateur) REFERENCES Utilisateur(id)

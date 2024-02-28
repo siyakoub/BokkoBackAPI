@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -21,6 +22,8 @@ public class ReservationDTO extends AbstractDTO implements Serializable {
     private UserDTO userDTO;
 
     private int nbPlacesReserv;
+
+    private LocalDateTime dateReservation;
 
     private String statut;
 

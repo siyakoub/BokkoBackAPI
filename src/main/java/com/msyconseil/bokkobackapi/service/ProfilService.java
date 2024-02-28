@@ -228,12 +228,13 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
         return entity;
     }
 
-    public ProfilModel mapDTOToEntity(ProfilDTO profilDTO) throws ErrorException {
-        if (profilDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
+    @Override
+    public ProfilModel mapDTOToEntity(ProfilDTO dto) throws ErrorException {
+        if (dto == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         ProfilModel entity = new ProfilModel();
-        entity.setUserModel(userService.generateEntityByDTO(profilDTO.getUserDTO()));
-        entity.setBio(profilDTO.getBio());
-        entity.setPictureProfil(profilDTO.getPictureProfil());
+        entity.setUserModel(userService.generateEntityByDTO(dto.getUserDTO()));
+        entity.setBio(dto.getBio());
+        entity.setPictureProfil(dto.getPictureProfil());
         return entity;
     }
 

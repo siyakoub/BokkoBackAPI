@@ -225,6 +225,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         return mapDTOToEntity(dto);
     }
 
+    @Override
     public UserModel mapDTOToEntity(UserDTO dto) throws ErrorException {
         if (dto == null) throw new ErrorException(ErrorMessageEnum.ENTITY_FABRICATION_ERROR);
         UserModel entity = new UserModel();

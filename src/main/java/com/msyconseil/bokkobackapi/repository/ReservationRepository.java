@@ -16,7 +16,31 @@ public interface ReservationRepository extends JpaRepository<ReservationModel, I
     public List<ReservationModel> findAllReservation();
 
     @Query(value = "select * from Reservation where id = :id", nativeQuery = true)
-    public List<ReservationModel> findById(@Param("id") int id);
+    public ReservationModel findById(@Param("id") int id);
+
+    @Query(value = "select * from Reservation where passager_idUtilisateur = :idPassager and statut = 'en attente' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationInProgressByPassager(@Param("idPassager") int idPassager);
+
+    @Query(value = "select * from Reservation where passager_idUtilisateur = :idPassager and statut = 'confirmé' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationConfirmedByPassager(@Param("idPassager") int idPassager);
+
+    @Query(value = "SELECT * FROM Reservation WHERE passager_idUtilisateur = :idPassager AND statut = 'fini' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationFinishedByPassager(@Param("idPassager") int idPassager);
+
+    @Query(value = "SELECT * from Reservation where trajet_idTrajet = :idTrajet and statut = 'en attente' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationInProgressByTrajet(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where trajet_idTrajet = :idTrajet and statut = 'confirmé' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationConfirmedByTrajet(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where trajet_idTrajet = :idTrajet and statut = 'confirmé' ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationFinishedByTrajet(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where passager_idUtilisateur = :idPassager ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationByPassager(@Param("idPassager") int idPassager);
+
+    @Query(value = "select * from Reservation where trajet_idTrajet = :idTrajet ORDER BY date_reservation DESC LIMIT 1", nativeQuery = true)
+    public ReservationModel findLastReservationByTrajet(@Param("idTrajet") int idTrajet);
 
     @Query(value = "select * from Reservation where trajet_idTrajet = :id_trajet", nativeQuery = true)
     public List<ReservationModel> findByAllByTrajet(@Param("id_trajet") int id_trajet);

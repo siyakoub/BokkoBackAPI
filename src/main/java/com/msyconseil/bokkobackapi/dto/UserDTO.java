@@ -2,6 +2,8 @@ package com.msyconseil.bokkobackapi.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.msyconseil.bokkobackapi.service.enumerator.UserStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,6 +38,8 @@ public class UserDTO extends AbstractDTO implements Serializable {
     private String phoneNumber;
 
     private String token;
+
+    private LocalDateTime dateInscription;
 
     @NotEmpty(message = "Le statut de l'utilisateur est requis")
     private UserStatusEnum statut;

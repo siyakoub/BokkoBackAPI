@@ -94,28 +94,6 @@ delimiter ;
 
 
 delimiter //
-drop procedure if exists sp_createVehicule;
-create definer=`root`@`localhost` procedure sp_createVehicule(
-    in p_conducteur_id int,
-    in p_marque varchar(255),
-    in p_modele varchar(255),
-    in p_couleur varchar(50),
-    in p_immatriculation varchar(50),
-    in p_annee int
-)
-begin
-    if exists(
-        select 1 from Vehicule where immatriculation = p_immatriculation and marque = p_marque and modele = p_modele
-    ) then
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Voiture déjà enregistré...';
-    else
-        insert into Vehicule(conducteur_idUtilisateur, marque, modele, couleur, immatriculation, annee) values (p_conducteur_id, p_marque, p_modele, p_couleur, p_immatriculation, p_annee);
-    end if;
-end; //
-delimiter ;
-
-delimiter //
 drop procedure if exists sp_createMessage;
 create definer=`root`@`localhost` procedure `sp_createMessage`(
     in p_expediteur_id int,
@@ -135,6 +113,7 @@ create definer=`root`@`localhost` procedure `sp_createReservation`(
     in p_trajet_id int,
     in p_passager_id_user int,
     in p_nb_places_reserv int,
+    in p_dateReservation datetime,
     in p_statut ENUM('en attente', 'confirmé', 'fini')
 )
 begin
@@ -144,7 +123,7 @@ begin
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Voiture déjà enregistré...';
     else
-        insert into Reservation(trajet_idTrajet, passager_idUtilisateur, nombrePlacesReservees, statut) values (p_trajet_id, p_passager_id_user, p_nb_places_reserv, p_statut);
+        insert into Reservation(trajet_idTrajet, passager_idUtilisateur, nombrePlacesReservees, date_reservation, statut) values (p_trajet_id, p_passager_id_user, p_nb_places_reserv, p_dateReservation, p_statut);
     end if;
 end; //
 delimiter ;
