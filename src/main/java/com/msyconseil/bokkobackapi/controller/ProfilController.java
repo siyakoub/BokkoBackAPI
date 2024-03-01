@@ -23,12 +23,12 @@ public class ProfilController {
     ProfilService profilService;
 
     @PostMapping("/")
-    public CustomAnswer<ProfilDTO> add(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO) throws ErrorException, ProfilException {
+    public CustomAnswer<ProfilDTO> add(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO) throws ErrorException {
         return profilService.add(headers, profilDTO);
     }
 
     @PutMapping("/")
-    public CustomAnswer<ProfilDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO, @RequestParam String email) throws ErrorException, ProfilException {
+    public CustomAnswer<ProfilDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO, @RequestParam String email) throws ErrorException {
         return profilService.update(headers, profilDTO, email);
     }
 

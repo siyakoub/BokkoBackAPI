@@ -15,13 +15,13 @@ import java.util.Map;
 
 public interface ICRUDService <D extends Object, U> {
 
-    CustomAnswer<D> get(Map<String, String> headers, U email) throws Exception;
+    CustomAnswer<D> get(Map<String, String> headers, U email) throws ErrorException;
 
-    CustomListAnswer<List<D>> getAll(Map<String, String> headers, int page, int size) throws Exception;
+    CustomListAnswer<List<D>> getAll(Map<String, String> headers, int page, int size) throws ErrorException;
 
-    CustomAnswer<D> add(Map<String, String> headers, D parameter) throws Exception;
+    CustomAnswer<D> add(Map<String, String> headers, D parameter) throws ErrorException;
 
-    CustomAnswer<D> update(Map<String, String> headers, D parameter, U email) throws Exception;
+    CustomAnswer<D> update(Map<String, String> headers, D parameter, U email) throws ErrorException;
 
-    CustomAnswer<D> delete(Map<String, String> headers, U email) throws Exception;
+    CustomAnswer<D> delete(Map<String, String> headers, U email) throws ErrorException;
 }

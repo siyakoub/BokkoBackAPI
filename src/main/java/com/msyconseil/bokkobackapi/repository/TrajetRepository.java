@@ -4,6 +4,8 @@ import com.msyconseil.bokkobackapi.model.TrajetModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
+
 import java.util.List;
 
 public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
@@ -15,6 +17,18 @@ public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
 
     @Query(value = "select * from Trajet where conducteur_idUtilisateur = :idConducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByConducteur(@Param("idConducteur") int idConducteur);
+
+    @Query(value = "select * from trajet where statut = 'à venir' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    public TrajetModel findLastTrajetByStatutToBecomeForDriver(@Param("id_conducteur") int id_conducteur);
+
+    @Query(value = "select * from trajet where statut = 'en cours' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    public TrajetModel findLastTrajetByStatutInProgressForDriver(@Param("id_conducteur") int id_conducteur);
+
+    @Query(value = "select * from trajet where statut = 'terminé' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    public TrajetModel findLastTrajetByStatutFinishedForDriver(@Param("id_conducteur") int idConducteur);
+
+    @Query(value = "select * from trajet where statut = 'annulée' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    public TrajetModel findLastTrajetByStatutCanceledForDriver(@Param("id_conducteur") int id_conducteur);
 
     @Query(value = "select * from trajet where conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByDriver(@Param("id_conducteur") int id_conducteur);

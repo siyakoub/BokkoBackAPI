@@ -38,7 +38,7 @@ public class ReservationModel extends AbstractModel implements Serializable{
     @Getter
     @Setter
     @Column(name = "date_reservation")
-    private String dateReservation;
+    private LocalDateTime dateReservation;
 
     @Getter
     @Setter

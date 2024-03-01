@@ -49,7 +49,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
         return generateDTOByEntity(profilModel);
     }
     
-    public ProfilDTO add(ProfilModel profilModel) throws Exception {
+    public ProfilDTO add(ProfilModel profilModel) throws ErrorException {
         return generateDTOByEntity(profilRepository.save(profilModel));
     }
 
@@ -147,10 +147,12 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
             getActiveSession(headers);
             UserModel userModel = getUserByEmail(email);
             ProfilModel profilModel = getProfilByUser(userModel.getId());
-            profilRepository.deleteProfilByUserId(profilModel.getUserModel().getId());
             if (profilModel != null) {
+                profilRepository.deleteProfilByUserId(profilModel.getUserModel().getId());
                 ProfilDTO profilDTO = generateDTOByEntity(profilModel);
                 response.setContent(profilDTO);
+            } else {
+                throw new ProfilException(ProfilMessageEnum.ERROR_PROFIL_DELETE);
             }
         } catch (Exception e) {
             e.fillInStackTrace();

@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public CustomAnswer<UserDTO> add(@RequestHeader Map<String, String> headers, @RequestBody UserDTO userDTO) throws Exception {
+    public CustomAnswer<UserDTO> add(@RequestHeader Map<String, String> headers, @RequestBody UserDTO userDTO) throws ErrorException {
         return userService.add(headers, userDTO);
     }
 
@@ -45,7 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public CustomListAnswer<List<UserDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, int size) throws ErrorException {
+    public CustomListAnswer<List<UserDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
         return userService.getAll(headers, page, size);
     }
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -252,9 +253,9 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setPhoneNumber(entity.getPhoneNumber());
-        if (entity.getStatut() == "B") {
+        if (Objects.equals(entity.getStatut(), "B")) {
             dto.setStatut(UserStatusEnum.BLOCKED);
-        } else if (entity.getStatut() == "I") {
+        } else if (Objects.equals(entity.getStatut(), "I")) {
             dto.setStatut(UserStatusEnum.INACTIF);
         } else {
             dto.setStatut(UserStatusEnum.ACTIF);
