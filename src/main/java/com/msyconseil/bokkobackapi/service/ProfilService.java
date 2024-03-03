@@ -54,7 +54,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     }
 
     @Override
-    public CustomAnswer<ProfilDTO> get(Map<String, String> headers, String email) throws ErrorException {
+    public CustomAnswer<ProfilDTO> get(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<ProfilDTO> response = new CustomAnswer<>();
         try{
@@ -74,7 +74,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     }
 
     @Override
-    public CustomListAnswer<List<ProfilDTO>> getAll(Map<String, String> headers, int page, int size) throws ErrorException {
+    public CustomListAnswer<List<ProfilDTO>> getAll(final Map<String, String> headers, int page, int size) throws ErrorException {
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
@@ -114,7 +114,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     }
 
     @Override
-    public CustomAnswer<ProfilDTO> update(Map<String, String> headers, ProfilDTO parameter, String email) throws ErrorException {
+    public CustomAnswer<ProfilDTO> update(final Map<String, String> headers, ProfilDTO parameter, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<ProfilDTO> response = new CustomAnswer<ProfilDTO>();
         try {
@@ -140,7 +140,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     }
 
     @Override
-    public CustomAnswer<ProfilDTO> delete(Map<String, String> headers, String email) throws ErrorException {
+    public CustomAnswer<ProfilDTO> delete(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<ProfilDTO> response = new CustomAnswer<>();
         try {

@@ -27,7 +27,7 @@ public class TrajetController {
     }
 
     @GetMapping("/all")
-    public CustomAnswer<List<TrajetDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
+    public CustomListAnswer<List<TrajetDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
         return trajetService.getAll(headers, page, size);
     }
 

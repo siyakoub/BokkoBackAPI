@@ -13,6 +13,21 @@ public interface AvisRepository extends JpaRepository<AvisModel, Integer> {
     @Query(value = "select * from Avis", nativeQuery = true)
     public List<AvisModel> findAllAvis();
 
+    @Query(value = "select * from Avis where utilisateur_idUtilisateur = :idUser", nativeQuery = true)
+    public List<AvisModel> findAllAvisByUser(@Param("idUser") int idUser);
+
+    @Query(value = "select * from Avis where utilisateur_idUtilisateur = :idUser order by id desc limit 1", nativeQuery = true)
+    public AvisModel findLastAvisByUser(@Param("idUser") int idUser);
+
+    @Query(value = "select * from Avis where reservation_idReservation = :idReservation order by id desc limit 1", nativeQuery = true)
+    public AvisModel findLastAvisByReservation(@Param("idReservation") int idReservation);
+
+    @Query(value = "select * from Avis where reservation_idReservation = :idReservation and utilisateur_idUtilisateur = :idUser order by id desc limit 1", nativeQuery = true)
+    public AvisModel findLastAvisByReservationAndUser(@Param("idReservation") int idReservation, @Param("idUser") int idUser);
+
+    @Query(value = "select * from Avis where reservation_idReservation = :idReservation and utilisateur_idUtilisateur = :idUser", nativeQuery = true)
+    public List<AvisModel> findAllByReservationAndUser(@Param("idReservation") int idReservation, @Param("idUser") int idUser);
+
     @Query(value = "select * from Avis where id = :id", nativeQuery = true)
     public AvisModel findAvisById(@Param("id") int id);
 

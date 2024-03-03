@@ -15,6 +15,7 @@ import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,21 +49,21 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         return generateDTOByEntity(userModel);
     }
 
-    public CustomAnswer<UserDTO> update(Map<String, String> headers, UserDTO parameter, String email) throws ErrorException {
+    public CustomAnswer<UserDTO> update(final Map<String, String> headers, UserDTO parameter, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
         SessionModel sessionModel = getActiveSession(headers);
         UserModel entity = getUserByEmail(email);
-        updateInformation(entity, parameter);
-        entity = userRepository.save(entity);
         if (entity != null) {
+            updateInformation(entity, parameter);
+            entity = userRepository.save(entity);
             UserDTO userDTO = generateDTOByEntity(entity);
             response.setContent(userDTO);
         }
         return response;
     }
 
-    public CustomAnswer<UserDTO> delete(Map<String, String> headers, String email) throws ErrorException {
+    public CustomAnswer<UserDTO> delete(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
@@ -96,7 +97,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
     }
 
     @Override
-    public CustomAnswer<UserDTO> get(Map<String, String> headers, String email) throws ErrorException {
+    public CustomAnswer<UserDTO> get(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
@@ -125,7 +126,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
 
 
     @Override
-    public CustomListAnswer<List<UserDTO>> getAll(Map<String, String> headers, int page, int size) throws ErrorException {
+    public CustomListAnswer<List<UserDTO>> getAll(final Map<String, String> headers, int page, int size) throws ErrorException {
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
@@ -241,7 +242,14 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
 
     @Override
     public UserModel mapEntityByWithDTO(UserModel entity, UserDTO dto) throws ErrorException {
-        return null;
+        if (entity == null) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        entity.setName(dto.getName());
+        entity.setFirstName(dto.getFirstName());
+        entity.setEmail(dto.getEmail());
+        entity.setPassword(dto.getPassword());
+        entity.setPhoneNumber(dto.getPhoneNumber());
+        entity.setStatut(dto.getStatut().getMessage());
+        return entity;
     }
 
     @Override

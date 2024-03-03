@@ -52,6 +52,7 @@ CREATE TABLE Vehicule (
                         couleur VARCHAR(50),
                         immatriculation VARCHAR(50),
                         annee INT,
+                        used tinyint not null,
                         FOREIGN KEY (conducteur_idUtilisateur) REFERENCES Utilisateur(id)
 );
 drop table if exists Paiement;

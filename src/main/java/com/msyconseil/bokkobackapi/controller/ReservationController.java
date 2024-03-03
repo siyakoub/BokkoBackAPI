@@ -36,7 +36,7 @@ public class ReservationController {
     }
 
     @GetMapping("/all")
-    public CustomAnswer<List<ReservationDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
+    public CustomListAnswer<List<ReservationDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
         return reservationService.getAll(headers, page, size);
     }
 

@@ -44,7 +44,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_createVehicule`(
     in p_model varchar(255),
     in p_couleur varchar(50),
     in p_immatriculation varchar(50),
-    in p_annee int
+    in p_annee int,
+    in p_use tinyint
 )
 begin
     IF EXISTS (
@@ -57,8 +58,8 @@ begin
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Un trajet est déjà enregistré à cette date pour ce conducteur';
     else
-        insert into Vehicule(conducteur_idUtilisateur, marque, modele, couleur, immatriculation, annee)
-            values (p_conducteur_user_id, p_marque, p_model, p_couleur, p_immatriculation, p_annee);
+        insert into Vehicule(conducteur_idUtilisateur, marque, modele, couleur, immatriculation, annee, used)
+            values (p_conducteur_user_id, p_marque, p_model, p_couleur, p_immatriculation, p_annee, p_use);
     end if;
 end; //
 delimiter ;

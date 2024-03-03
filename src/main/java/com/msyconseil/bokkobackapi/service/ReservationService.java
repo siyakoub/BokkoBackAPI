@@ -59,39 +59,39 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         return generateDTOByEntity(reservationRepository.save(reservationModel));
     }
 
-    public ReservationModel getReservationByPassagerUserAndTrajet(int idTrajet, int idPassager) {
+    private ReservationModel getReservationByPassagerUserAndTrajet(int idTrajet, int idPassager) {
         return reservationRepository.findReservationByPassagerAndTrajet(idPassager, idTrajet);
     }
 
-    public List<ReservationModel> getAllReservationByPassager(int idPassager) {
+    private List<ReservationModel> getAllReservationByPassager(int idPassager) {
         return reservationRepository.findAllReservationByPassager(idPassager);
     }
 
-    public List<ReservationModel> getAllReservationByTrajet(int idTrajet) {
+    private List<ReservationModel> getAllReservationByTrajet(int idTrajet) {
         return reservationRepository.findByAllByTrajet(idTrajet);
     }
 
-    public List<ReservationModel> getAllReservation() {
+    private List<ReservationModel> getAllReservation() {
         return reservationRepository.findAllReservation();
     }
 
-    public List<ReservationModel> getAllReservationInProgress() {
+    private List<ReservationModel> getAllReservationInProgress() {
         return reservationRepository.findReservationByStatutInProgress();
     }
 
-    public List<ReservationModel> getAllReservationConfirmed() {
+    private List<ReservationModel> getAllReservationConfirmed() {
         return reservationRepository.findReservationByStatutInConfirmation();
     }
 
-    public List<ReservationModel> getAllReservationFinished() {
+    private List<ReservationModel> getAllReservationFinished() {
         return reservationRepository.findReservationByStatutFinished();
     }
 
-    public ReservationModel getById(int id) {
+    private ReservationModel getById(int id) {
         return reservationRepository.findById(id);
     }
 
-    public ReservationModel getLastReservationInProgressByPassager(int idPassager) {
+    private ReservationModel getLastReservationInProgressByPassager(int idPassager) {
         return reservationRepository.findLastReservationInProgressByPassager(idPassager);
     }
 
@@ -103,23 +103,23 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         return reservationRepository.findLastReservationFinishedByPassager(idPassager);
     }
 
-    public ReservationModel getLastReservationInProgressByTrajet(int idTrajet) {
+    private ReservationModel getLastReservationInProgressByTrajet(int idTrajet) {
         return reservationRepository.findLastReservationInProgressByTrajet(idTrajet);
     }
 
-    public ReservationModel getLastReservationConfirmedByTrajet(int idTrajet) {
+    private ReservationModel getLastReservationConfirmedByTrajet(int idTrajet) {
         return reservationRepository.findLastReservationConfirmedByTrajet(idTrajet);
     }
 
-    public ReservationModel getLastReservationFinishedByTrajet(int idTrajet) {
+    private ReservationModel getLastReservationFinishedByTrajet(int idTrajet) {
         return reservationRepository.findLastReservationFinishedByTrajet(idTrajet);
     }
 
-    public ReservationModel getLastReservationByPassager(int idPassager) {
+    private ReservationModel getLastReservationByPassager(int idPassager) {
         return reservationRepository.findLastReservationByPassager(idPassager);
     }
 
-    public ReservationModel getLastReservationByTrajet(int idTrajet) {
+    private ReservationModel getLastReservationByTrajet(int idTrajet) {
         return reservationRepository.findLastReservationByTrajet(idTrajet);
     }
 

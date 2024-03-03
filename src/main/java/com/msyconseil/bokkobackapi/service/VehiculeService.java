@@ -1,6 +1,5 @@
 package com.msyconseil.bokkobackapi.service;
 
-import com.msyconseil.bokkobackapi.dto.TrajetDTO;
 import com.msyconseil.bokkobackapi.dto.VehiculeDTO;
 import com.msyconseil.bokkobackapi.model.SessionModel;
 import com.msyconseil.bokkobackapi.model.UserModel;
@@ -34,49 +33,170 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         super(sessionService);
     }
 
+    public VehiculeModel getLastVehiculeByDriver(int idConducteur) {
+        return vehiculeRepository.findLastVehiculeByDriver(idConducteur);
+    }
 
-    @Override
-    public CustomAnswer<VehiculeDTO> get(Map<String, String> headers, String email) throws ErrorException {
-        return null;
+    public VehiculeModel getLastVehiculeByDriverActif(int idConducteur) {
+        return vehiculeRepository.findLastVehiculeByDriverActif(idConducteur);
+    }
+
+    @Transactional
+    public VehiculeDTO add(VehiculeDTO vehiculeDTO) throws ErrorException {
+        if (vehiculeDTO == null) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        VehiculeModel vehiculeModel = generateEntityByDTO(vehiculeDTO);
+        vehiculeModel = vehiculeRepository.save(vehiculeModel);
+        return generateDTOByEntity(vehiculeModel);
+    }
+
+    public VehiculeDTO add(VehiculeModel vehiculeModel) throws ErrorException {
+        return generateDTOByEntity(vehiculeRepository.save(vehiculeModel));
     }
 
     @Override
-    public CustomListAnswer<List<VehiculeDTO>> getAll(Map<String, String> headers, int page, int size) throws ErrorException {
-        return null;
+    public CustomAnswer<VehiculeDTO> get(Map<String, String> headers, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
+            if (vehiculeModel != null) {
+                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                response.setContent(vehiculeDTO);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    @Override
+    public CustomListAnswer<List<VehiculeDTO>> getAll(Map<String, String> headers, int page, int size) throws ErrorException, VehiculeException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<VehiculeDTO>> response = new CustomListAnswer<>();
+        List<VehiculeDTO> list = new LinkedList<>();
+        for (VehiculeModel vehiculeModel : vehiculeRepository.findAllVehiculeActif()) {
+            list.add(generateDTOByEntity(vehiculeModel));
+        }
+        if (list.isEmpty()) {
+            throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+        } else {
+            response.setContent(list);
+        }
+        return response;
     }
 
     @Override
     public CustomAnswer<VehiculeDTO> add(Map<String, String> headers, VehiculeDTO parameter) throws ErrorException {
-        return null;
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            VehiculeDTO vehiculeDTO = add(parameter);
+            if (vehiculeDTO == null) throw new VehiculeException(VehiculeMessageEnum.ERROR_CREATION_AUTO);
+            response.setContent(vehiculeDTO);
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
     }
 
     @Override
     public CustomAnswer<VehiculeDTO> update(Map<String, String> headers, VehiculeDTO parameter, String email) throws ErrorException {
-        return null;
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
+            if (vehiculeModel != null) {
+                updateInformation(vehiculeModel, parameter);
+                vehiculeModel = vehiculeRepository.save(vehiculeModel);
+                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                response.setContent(vehiculeDTO);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
     }
 
     @Override
-    public CustomAnswer<VehiculeDTO> delete(Map<String, String> headers, String email) throws ErrorException {
+    public CustomAnswer<VehiculeDTO> delete(Map<String, String> headers, String email) throws ErrorException, VehiculeException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
+            if (vehiculeModel != null) {
+                vehiculeRepository.delete(vehiculeModel);
+                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                response.setContent(vehiculeDTO);
+            } else {
+                throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+            }
+        } catch (VehiculeException e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(VehiculeMessageEnum.ERROR_DELETE_AUTO.getMessage());
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
         return null;
+    }
+
+    private void updateInformation(VehiculeModel vehiculeModel, VehiculeDTO vehiculeDTO) {
+        vehiculeModel.setMarque(vehiculeDTO.getMarque());
+        vehiculeModel.setModele(vehiculeDTO.getModele());
+        vehiculeModel.setCouleur(vehiculeDTO.getCouleur());
+        vehiculeModel.setAnnee(vehiculeDTO.getAnnee());
+        vehiculeModel.setImmatriculation(vehiculeDTO.getImmatriculation());
     }
 
     @Override
     public VehiculeModel generateEntityByDTO(VehiculeDTO dto) throws ErrorException {
-        return null;
+        return mapDTOToEntity(dto);
     }
 
     @Override
     public VehiculeModel mapEntityByWithDTO(VehiculeModel entity, VehiculeDTO dto) throws ErrorException {
-        return null;
+        if (entity == null) throw new ErrorException(ErrorMessageEnum.ENTITY_FABRICATION_ERROR);
+        entity.setUserModel(userService.generateEntityByDTO(dto.getUserDTO()));
+        entity.setModele(dto.getModele());
+        entity.setMarque(dto.getMarque());
+        entity.setCouleur(dto.getCouleur());
+        entity.setAnnee(dto.getAnnee());
+        entity.setImmatriculation(dto.getImmatriculation());
+        return entity;
     }
 
     @Override
     public VehiculeDTO generateDTOByEntity(VehiculeModel entity) throws ErrorException {
-        return null;
+        if (entity == null) {
+            throw new ErrorException(ErrorMessageEnum.ENTITY_FABRICATION_ERROR);
+        }
+        VehiculeDTO dto = new VehiculeDTO();
+        dto.setUserDTO(userService.generateDTOByEntity(entity.getUserModel()));
+        dto.setModele(entity.getModele());
+        dto.setMarque(entity.getMarque());
+        dto.setAnnee(entity.getAnnee());
+        dto.setCouleur(entity.getCouleur());
+        dto.setImmatriculation(entity.getImmatriculation());
+        return dto;
     }
 
     @Override
     public VehiculeModel mapDTOToEntity(VehiculeDTO dto) throws ErrorException {
-        return null;
+        if (dto == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
+        VehiculeModel entity = new VehiculeModel();
+        entity.setUserModel(userService.generateEntityByDTO(dto.getUserDTO()));
+        entity.setMarque(dto.getMarque());
+        entity.setModele(dto.getModele());
+        entity.setAnnee(dto.getAnnee());
+        entity.setCouleur(dto.getCouleur());
+        entity.setImmatriculation(dto.getImmatriculation());
+        return entity;
     }
 }

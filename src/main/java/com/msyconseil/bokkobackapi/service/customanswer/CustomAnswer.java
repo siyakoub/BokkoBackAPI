@@ -34,7 +34,7 @@ public class CustomAnswer<T extends Object> implements Serializable {
 
     public void setErrorMessage(String errorMessage) {
         hasError = true;
-        if (!(errorMessage == null || errorMessage.trim().equals(""))) {
+        if (!(errorMessage == null || errorMessage.trim().isEmpty())) {
             this.errorMessage = errorMessage;
         }
     }

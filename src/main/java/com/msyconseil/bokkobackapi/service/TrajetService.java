@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> implements IService<TrajetModel, TrajetDTO>, ICRUDService<TrajetDTO, String> {
@@ -88,70 +89,69 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         return trajetDTO;
     }
 
-    public List<TrajetModel> getAllTrajets() {
+    private List<TrajetModel> getAllTrajets() {
         return trajetRepository.findAllTrajet();
     }
 
-    public TrajetModel getLastTrajetByDriver(int idConducteur) {
+    private TrajetModel getLastTrajetByDriver(int idConducteur) {
         return trajetRepository.findLastTrajetByConducteur(idConducteur);
     }
 
-    public List<TrajetModel> getAllTrajetByDriver(int idConducteur) {
+    private List<TrajetModel> getAllTrajetByDriver(int idConducteur) {
         return trajetRepository.findAllByDriver(idConducteur);
     }
 
-    public TrajetModel getTrajetById(int idTrajet) {
+    private TrajetModel getTrajetById(int idTrajet) {
         return trajetRepository.findById(idTrajet);
     }
 
-    public List<TrajetModel> getAllTrajetByStatutToBecome() {
+    private List<TrajetModel> getAllTrajetByStatutToBecome() {
         return trajetRepository.findAllByStatutToBecome();
     }
 
-    public List<TrajetModel> getAllTrajetByStatutInProgress() {
+    private List<TrajetModel> getAllTrajetByStatutInProgress() {
         return trajetRepository.findAllByStatutInProgress();
     }
 
-    public List<TrajetModel> getAllTrajetByStatutFinished() {
+    private List<TrajetModel> getAllTrajetByStatutFinished() {
         return trajetRepository.findAllByStatutFinished();
     }
 
-    public List<TrajetModel> getAllTrajetByStatutCanceled() {
+    private List<TrajetModel> getAllTrajetByStatutCanceled() {
         return trajetRepository.findAllByStatutCanceled();
     }
 
-    public List<TrajetModel> getAllTrajetByStatutToBecomeForDriver(int idConducteur) {
+    private List<TrajetModel> getAllTrajetByStatutToBecomeForDriver(int idConducteur) {
         return trajetRepository.findAllByStatutToBecomeForDriver(idConducteur);
     }
 
-    public List<TrajetModel> getAllTrajetByStatutInProgressForDriver(int idConducteur) {
+    private List<TrajetModel> getAllTrajetByStatutInProgressForDriver(int idConducteur) {
         return trajetRepository.findAllByStatutInProgressForDriver(idConducteur);
     }
 
-    public List<TrajetModel> getAllTrajetByStatutFinishedForDriver(int idConducteur) {
+    private List<TrajetModel> getAllTrajetByStatutFinishedForDriver(int idConducteur) {
         return trajetRepository.findAllByStatutFinishedForDriver(idConducteur);
     }
 
-    public List<TrajetModel> getAllTrajetByStatutCanceledForDriver(int idConducteur) {
+    private List<TrajetModel> getAllTrajetByStatutCanceledForDriver(int idConducteur) {
         return trajetRepository.findAllByStatutCanceledForDriver(idConducteur);
     }
 
-    public TrajetModel getLastTrajetByStatutToBecomeForDriver(int idConducteur) {
+    private TrajetModel getLastTrajetByStatutToBecomeForDriver(int idConducteur) {
         return trajetRepository.findLastTrajetByStatutToBecomeForDriver(idConducteur);
     }
 
-    public TrajetModel getLastTrajetByStatutInProgressForDriver(int idConducteur) {
+    private TrajetModel getLastTrajetByStatutInProgressForDriver(int idConducteur) {
         return trajetRepository.findLastTrajetByStatutInProgressForDriver(idConducteur);
     }
 
-    public TrajetModel getLastTrajetByStatutFinishedForDriver(int idConducteur) {
+    private TrajetModel getLastTrajetByStatutFinishedForDriver(int idConducteur) {
         return trajetRepository.findLastTrajetByStatutFinishedForDriver(idConducteur);
     }
 
-    public TrajetModel getLastTrajetByStatutCanceledForDriver(int idConducteur) {
+    private TrajetModel getLastTrajetByStatutCanceledForDriver(int idConducteur) {
         return trajetRepository.findLastTrajetByStatutCanceledForDriver(idConducteur);
     }
-
 
     @Override
     public TrajetModel mapDTOToEntity(TrajetDTO dto) throws ErrorException {
@@ -232,14 +232,17 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         try {
             SessionModel sessionModel = getActiveSession(headers);
             TrajetModel trajetModel = getLastTrajetByDriver(sessionModel.getUserModel().getId());
-            updateInformation(trajetModel, parameter);
-            trajetModel = trajetRepository.save(trajetModel);
             if (trajetModel != null) {
+                updateInformation(trajetModel, parameter);
+                trajetModel = trajetRepository.save(trajetModel);
                 TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
                 response.setContent(trajetDTO);
             } else {
-                throw new TrajetException(TrajetMessageEnum.ERROR_TRAJET_UPDATE);
+                throw new TrajetException(TrajetMessageEnum.NOT_FOUND);
             }
+        } catch (TrajetException e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(TrajetMessageEnum.ERROR_TRAJET_UPDATE.getMessage());
         } catch (Exception e) {
             e.fillInStackTrace();
             response.setErrorMessage(e.getMessage());
@@ -253,13 +256,17 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         CustomAnswer<TrajetDTO> response = new CustomAnswer<>();
         try {
             SessionModel sessionModel = getActiveSession(headers);
-            TrajetModel trajetModel = getLastTrajetByDriver(sessionModel.getUserModel().getId());
-            if (trajetModel != null) {
-                trajetRepository.delete(trajetModel);
-                TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
-                response.setContent(trajetDTO);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                TrajetModel trajetModel = getLastTrajetByDriver(sessionModel.getUserModel().getId());
+                if (trajetModel != null) {
+                    trajetRepository.delete(trajetModel);
+                    TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                    response.setContent(trajetDTO);
+                } else {
+                    throw new TrajetException(TrajetMessageEnum.ERROR_TRAJET_DELETE);
+                }
             } else {
-                throw new TrajetException(TrajetMessageEnum.ERROR_TRAJET_DELETE);
+                throw new Exception("Le token n'appartient pas à cette utilisateur...");
             }
         } catch (Exception e) {
             e.fillInStackTrace();

@@ -48,6 +48,7 @@ entity Vehicule {
     couleur : VARCHAR
     immatriculation : VARCHAR
     annee : INT
+    use : INT
 }
 
 entity Paiement {
