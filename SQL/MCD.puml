@@ -36,7 +36,7 @@ entity Reservation {
     trajet_idTrajet : INT
     passager_idUtilisateur : INT
     nombrePlacesReservees : INT
-    date_reservation : INT
+    date_reservation : DATETIME
     statut : ENUM
 }
 
@@ -54,6 +54,7 @@ entity Vehicule {
 entity Paiement {
     id : INT
     reservation_idReservation : INT
+    utilisateur_idUtilisateur : INT  ' Ajout de l'identifiant de l'utilisateur qui a payé
     montant : FLOAT
     dateHeure : DATETIME
     methode : ENUM
@@ -93,6 +94,7 @@ Utilisateur ||--o{ Trajet : "Conducteur"
 Utilisateur ||--o{ Reservation : "Passager"
 Utilisateur ||--o{ Vehicule : "Conducteur"
 Reservation ||--o{ Paiement : ""
+Utilisateur ||--o{ Paiement : "Payeur"
 Reservation ||--o{ Avis : ""
 Utilisateur ||--o{ Avis : "Posteur"
 Utilisateur ||--o{ Message : "Expediteur"

@@ -30,12 +30,12 @@ public class SessionModel extends AbstractModel implements Serializable {
 
     @Getter
     @Setter
-    @Column(name = "dateDebutSession")
+    @Column(name = "date_debut_session")
     private LocalDateTime dateDebutSession;
 
     @Getter
     @Setter
-    @Column(name = "dateFinSession")
+    @Column(name = "date_fin_session")
     private LocalDateTime dateFinSession;
 
     @Getter
@@ -49,6 +49,7 @@ public class SessionModel extends AbstractModel implements Serializable {
 
     public SessionModel(UserModel userModel) {
         this.userModel = userModel;
+        createCode();
         this.dateDebutSession = LocalDateTime.now();
         this.dateFinSession = this.dateDebutSession.plusHours(24);
         this.actif = "E";

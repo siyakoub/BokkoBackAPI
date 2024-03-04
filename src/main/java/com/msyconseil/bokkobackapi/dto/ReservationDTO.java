@@ -1,5 +1,6 @@
 package com.msyconseil.bokkobackapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,6 +24,7 @@ public class ReservationDTO extends AbstractDTO implements Serializable {
 
     private int nbPlacesReserv;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateReservation;
 
     private String statut;

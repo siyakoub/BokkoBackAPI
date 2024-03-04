@@ -20,6 +20,8 @@ public class PaiementDTO extends AbstractDTO implements Serializable {
 
     private ReservationDTO reservationDTO;
 
+    private UserDTO userDTO;
+
     private float montant;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

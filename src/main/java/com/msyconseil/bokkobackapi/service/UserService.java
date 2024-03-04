@@ -10,12 +10,10 @@ import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
 import com.msyconseil.bokkobackapi.service.enumerator.ErrorMessageEnum;
 import com.msyconseil.bokkobackapi.service.enumerator.UserStatusEnum;
 import com.msyconseil.bokkobackapi.service.exception.ErrorException;
-import com.msyconseil.bokkobackapi.service.exception.UserException;
 import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.utils.Utils;
 import jakarta.transaction.Transactional;
-import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,14 +49,27 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
 
     public CustomAnswer<UserDTO> update(final Map<String, String> headers, UserDTO parameter, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers.get("token") == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
         CustomAnswer<UserDTO> response = new CustomAnswer<UserDTO>();
-        SessionModel sessionModel = getActiveSession(headers);
-        UserModel entity = getUserByEmail(email);
-        if (entity != null) {
-            updateInformation(entity, parameter);
-            entity = userRepository.save(entity);
-            UserDTO userDTO = generateDTOByEntity(entity);
-            response.setContent(userDTO);
+        try {
+            getActiveSession(headers);
+            UserModel entity = getUserByEmail(email);
+            if (entity != null) {
+                updateInformation(entity, parameter);
+                entity = userRepository.save(entity);
+                UserDTO userDTO = generateDTOByEntity(entity);
+                userDTO.setToken(headers.get("token"));
+                userDTO.setId(entity.getId());
+                response.setContent(userDTO);
+            } else {
+                throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+            }
+        } catch (ErrorException e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(ErrorMessageEnum.TOKEN_EXPIRED.getMessage());
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
         }
         return response;
     }
@@ -67,11 +78,11 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
-
+        if (headers.get("token") == null || headers.get("token").isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
         CustomAnswer<UserDTO> response = new CustomAnswer<>();
-        getActiveSession(headers);
 
         try {
+            getActiveSession(headers);
             UserModel entity = getUserByEmail(email);
 
             // Si getUserByEmail ne lance pas d'exception, l'utilisateur existe et on peut continuer
@@ -79,6 +90,8 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
             UserModel updatedEntity = userRepository.save(entity);
 
             UserDTO userDTO = generateDTOByEntity(updatedEntity);
+            userDTO.setToken(headers.get("token"));
+            userDTO.setId(updatedEntity.getId());
             response.setContent(userDTO);
         } catch (ErrorException e) {
             // Gestion de l'exception si l'utilisateur n'est pas trouvé
@@ -101,25 +114,35 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
+        if (headers.get("token") == null || headers.get("token").isEmpty()){
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+        CustomAnswer<UserDTO> response = new CustomAnswer<>();
 
         // Validation de la session. Si invalide, une ErrorException est levée.
-        SessionModel sessionModel = getActiveSession(headers);
+        try {
+            getActiveSession(headers);
 
-        // Supposons que getUserByEmail(email) pourrait retourner null si l'utilisateur n'est pas trouvé.
-        UserModel entity = getUserByEmail(email); // Utilisation directe de l'email fourni au lieu de celui de la sessionModel
+            // Supposons que getUserByEmail(email) pourrait retourner null si l'utilisateur n'est pas trouvé.
+            UserModel entity = getUserByEmail(email); // Utilisation directe de l'email fourni au lieu de celui de la sessionModel
 
-        if (entity == null) {
-            // Si aucun utilisateur n'est trouvé, plutôt que de retourner un objet vide,
-            // lever une exception indiquant que l'utilisateur n'est pas trouvé.
-            throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+            if (entity == null) {
+                // Si aucun utilisateur n'est trouvé, plutôt que de retourner un objet vide,
+                // lever une exception indiquant que l'utilisateur n'est pas trouvé.
+                throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+            }
+
+            // Conversion de l'entité UserModel en DTO.
+            UserDTO userDTO = generateDTOByEntity(entity);
+            userDTO.setToken(headers.get("token"));
+            userDTO.setId(entity.getId());
+
+            // Préparation et retour de la réponse.
+            response.setContent(userDTO);
+        } catch (Exception e) {
+            e.fillInStackTrace();
+
         }
-
-        // Conversion de l'entité UserModel en DTO.
-        UserDTO userDTO = generateDTOByEntity(entity);
-
-        // Préparation et retour de la réponse.
-        CustomAnswer<UserDTO> response = new CustomAnswer<>();
-        response.setContent(userDTO);
 
         return response;
     }
@@ -130,28 +153,38 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         }
-        getActiveSession(headers);
-
-        // Utilisation de PageRequest pour paginer les résultats de userRepository.findAll()
-        Page<UserModel> usersPage = userRepository.findAll(PageRequest.of(page, size));
-
-        List<UserDTO> userDTOs = usersPage.getContent().stream().map(userModel -> {
-            try {
-                return this.generateDTOByEntity(userModel);
-            } catch (ErrorException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList());
-
-        // Création de l'objet CustomListAnswer et remplissage avec les données paginées
+        if (headers.get("token") == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+        }
         CustomListAnswer<List<UserDTO>> response = new CustomListAnswer<>();
-        response.setContent(userDTOs);
-        response.setActualPageNumber(usersPage.getNumber());
-        response.setTotalNumberOfPages(usersPage.getTotalPages());
-        response.setTotalNumberOfElements(usersPage.getTotalElements());
-        response.setNumberOfElementByPage(size);
-        response.setNumberOfFoundElement(userDTOs.size());
+        try {
+            getActiveSession(headers);
 
+            // Utilisation de PageRequest pour paginer les résultats de userRepository.findAll()
+            Page<UserModel> usersPage = userRepository.findAll(PageRequest.of(page, size));
+
+            List<UserDTO> userDTOs = usersPage.getContent().stream().map(userModel -> {
+                try {
+                    return this.generateDTOByEntity(userModel);
+                } catch (ErrorException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+
+            // Création de l'objet CustomListAnswer et remplissage avec les données paginées
+            response.setContent(userDTOs);
+            response.setActualPageNumber(usersPage.getNumber());
+            response.setTotalNumberOfPages(usersPage.getTotalPages());
+            response.setTotalNumberOfElements(usersPage.getTotalElements());
+            response.setNumberOfElementByPage(size);
+            response.setNumberOfFoundElement(userDTOs.size());
+        } catch (ErrorException e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(ErrorMessageEnum.TOKEN_EXPIRED.getMessage());
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
         return response;
     }
 
@@ -193,14 +226,19 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
             if (dto.getEmail() == null || dto.getPassword() == null)
                 throw new Exception("Identifiant ou mot de passe manquant");
             UserModel optional = getUserByEmail(dto.getEmail());
-            System.out.println(optional);
-            if (optional != null && Utils.compare(dto.getPassword(), optional.getPassword())){
-                UserDTO userDTO = generateDTOByEntity(optional);
-                userDTO.setToken(sessionService.add(optional).getToken());
-                userDTO.setId(optional.getId());
-                response.setContent(userDTO);
+            if (optional != null) {
+                // Supposons que Utils.hash() hash le mot de passe fourni et que Utils.compare() compare les deux hash.
+                boolean isGood = Utils.compare(dto.getPassword(), optional.getPassword());
+                if (isGood) {
+                    UserDTO userDTO = generateDTOByEntity(optional);
+                    userDTO.setToken(sessionService.add(optional).getToken());
+                    userDTO.setId(optional.getId());
+                    response.setContent(userDTO);
+                } else {
+                    response.setErrorMessage("Identifiant ou mot de passe incorrect");
+                }
             } else {
-                response.setErrorMessage("Connexion impossible");
+                response.setErrorMessage("Utilisateur non trouvé");
             }
         } catch (Exception e) {
             e.fillInStackTrace();
@@ -237,6 +275,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         entity.setPassword(dto.getPassword());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setStatut(dto.getStatut().getMessage());
+        entity.setDateInscription(dto.getDateInscription());
         return entity;
     }
 
@@ -249,6 +288,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         entity.setPassword(dto.getPassword());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setStatut(dto.getStatut().getMessage());
+        entity.setDateInscription(dto.getDateInscription());
         return entity;
     }
 
@@ -268,6 +308,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         } else {
             dto.setStatut(UserStatusEnum.ACTIF);
         }
+        dto.setDateInscription(entity.getDateInscription());
         return dto;
     }
 }

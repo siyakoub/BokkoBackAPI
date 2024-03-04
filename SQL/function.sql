@@ -18,7 +18,7 @@ BEGIN
     IF user_id IS NOT NULL THEN
         RETURN -1;
     ELSE
-        insert into Utilisateur(nom, prenom, email, motDePasse, telephone, statut, dateInscription)
+        insert into Utilisateur(nom, prenom, email, mot_de_passe, telephone, statut, date_inscription)
             values (p_name, p_prenom, p_email, p_motDePasse, p_telephone, p_statut, p_dateInscription);
         SELECT LAST_INSERT_ID() INTO user_id;
     end if;

@@ -16,8 +16,14 @@ public interface PaiementRepository extends JpaRepository<PaiementModel, Integer
     @Query(value = "select * from Paiement where id = :id", nativeQuery = true)
     public PaiementModel findById(@Param("id") int id);
 
-    @Query(value = "select * from Paiement where reservation_idReservation = :id_reservation", nativeQuery = true)
+    @Query(value = "select * from Paiement where reservation_id_reservation = :id_reservation", nativeQuery = true)
     public PaiementModel findPaiementByReservation(@Param("id_reservation") int id);
+
+    @Query(value = "select * from Paiement where utilisateur_id_utilisateur = :id_user", nativeQuery = true)
+    public List<PaiementModel> findAllPaiementByUser(@Param("id_user") int idUser);
+
+    @Query(value = "select * from Paiement where utilisateur_id_utilisateur = :id_user order by id desc limit 1", nativeQuery = true)
+    public PaiementModel findLastPaiementByUser(@Param("id_user") int idUser);
 
     @Query(value = "select * from Paiement where statut = 'en attente'", nativeQuery = true)
     public List<PaiementModel> findAllPaiementByStatutInProgress();

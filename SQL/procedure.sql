@@ -17,8 +17,8 @@ BEGIN
     IF EXISTS (
         SELECT 1
         FROM Trajet
-        WHERE conducteur_idUtilisateur = p_conducteur_user_id
-          AND dateHeureDepart = p_dateHeureDepart
+        WHERE conducteur_id_utilisateur = p_conducteur_user_id
+          AND date_heure_depart = p_dateHeureDepart
           AND statut != 'annulée'
     )
     THEN
@@ -27,7 +27,7 @@ BEGIN
             SET MESSAGE_TEXT = 'Un trajet est déjà enregistré à cette date pour ce conducteur';
     ELSE
         -- Insérer le nouveau trajet si aucun conflit n'est détecté
-        INSERT INTO Trajet (conducteur_idUtilisateur, depart, arrivee, dateHeureDepart, nombrePlaces, prix, statut)
+        INSERT INTO Trajet (conducteur_id_utilisateur, depart, arrivee, date_heure_depart, nombre_places, prix, statut)
         VALUES (p_conducteur_user_id, p_depart, p_arrivee, p_dateHeureDepart, p_nombresPlaces, p_price, p_statut);
     END IF;
 END;
@@ -51,14 +51,14 @@ begin
     IF EXISTS (
         SELECT 1
         FROM Vehicule
-        WHERE conducteur_idUtilisateur = p_conducteur_user_id
+        WHERE conducteur_id_utilisateur = p_conducteur_user_id
           AND immatriculation = p_immatriculation
     )
     then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Un trajet est déjà enregistré à cette date pour ce conducteur';
     else
-        insert into Vehicule(conducteur_idUtilisateur, marque, modele, couleur, immatriculation, annee, used)
+        insert into Vehicule(conducteur_id_utilisateur, marque, modele, couleur, immatriculation, annee, used)
             values (p_conducteur_user_id, p_marque, p_model, p_couleur, p_immatriculation, p_annee, p_use);
     end if;
 end; //
@@ -87,7 +87,8 @@ begin
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Adresse e-mail déjà utilisé...';
     else
-        insert into Profil(utilisateur_idUtilisateur, bio, photo) values (new_user_id, p_biographie, p_photo);
+        insert into Profil(utilisateur_id_utilisateur, bio, photo) values (new_user_id, p_biographie, p_photo);
+        SELECT 'OK' as status;
     end if;
 
 end; //
@@ -104,7 +105,7 @@ create definer=`root`@`localhost` procedure `sp_createMessage`(
     in p_vu boolean
 )
 begin
-    insert into Message(expediteur_idUtilisateur, destinataire_idUtilisateur, contenu, dateHeureEnvoi, lu) values (p_expediteur_id, p_destinataire_id, p_contenu, p_dateHeureEnvoi, p_vu);
+    insert into Message(expediteur_id_utilisateur, destinataire_id_utilisateur, contenu, date_heure_envoi, lu) values (p_expediteur_id, p_destinataire_id, p_contenu, p_dateHeureEnvoi, p_vu);
 end; //
 delimiter ;
 
@@ -119,12 +120,12 @@ create definer=`root`@`localhost` procedure `sp_createReservation`(
 )
 begin
     if exists(
-        select 1 from Reservation where trajet_idTrajet = p_trajet_id and passager_idUtilisateur = p_passager_id_user
+        select 1 from Reservation where trajet_id_trajet = p_trajet_id and passager_id_utilisateur = p_passager_id_user
     ) then
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Voiture déjà enregistré...';
     else
-        insert into Reservation(trajet_idTrajet, passager_idUtilisateur, nombrePlacesReservees, date_reservation, statut) values (p_trajet_id, p_passager_id_user, p_nb_places_reserv, p_dateReservation, p_statut);
+        insert into Reservation(trajet_id_trajet, passager_id_utilisateur, nombre_places_reservees, date_reservation, statut) values (p_trajet_id, p_passager_id_user, p_nb_places_reserv, p_dateReservation, p_statut);
     end if;
 end; //
 delimiter ;
@@ -139,7 +140,7 @@ create definer=`root`@`localhost` procedure `sp_createPaiement`(
     in p_statut ENUM('en attente', 'confirmée', 'annulée')
 )
 begin
-    insert into Paiement(reservation_idReservation, montant, dateHeure, methode, statut) values (p_reserv_id, p_montant, p_dateHeure, p_method_paiement, p_statut);
+    insert into Paiement(reservation_id_reservation, montant, date_heure, methode, statut) values (p_reserv_id, p_montant, p_dateHeure, p_method_paiement, p_statut);
 end; //
 delimiter ;
 
@@ -153,6 +154,6 @@ create definer=`root`@`localhost` procedure `sp_createAvis`(
     in p_dateHeure datetime
 )
 begin
-    insert into Avis(reservation_idReservation, utilisateur_idUtilisateur, note, commentaire, dateHeure) values (p_reservation_id, p_utilisateur_idUtilisateur, p_note, p_commentaire, p_dateHeure);
+    insert into Avis(reservation_id_reservation, utilisateur_id_utilisateur, note, commentaire, date_heure) values (p_reservation_id, p_utilisateur_idUtilisateur, p_note, p_commentaire, p_dateHeure);
 end; //
 delimiter ;

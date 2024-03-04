@@ -22,8 +22,7 @@ public class Utils {
         if (text == null) {
             return null;
         } else {
-            String hash = BCrypt.hashpw(text, BCrypt.gensalt(12));
-            return hash;
+            return BCrypt.hashpw(text, BCrypt.gensalt(12));
         }
     }
     public static boolean compare(String clearText, String hash) {
@@ -38,8 +37,7 @@ public class Utils {
     public static LocalDateTime convertStringToLocalDateTime(String dateTimeString, String pattern) {
         if (dateTimeString != null && !dateTimeString.trim().equals("")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, formatter);
-            return dateTime;
+            return LocalDateTime.parse(dateTimeString, formatter);
         } else {
             return null;
         }
@@ -48,16 +46,15 @@ public class Utils {
         return convertStringToLocalDateTime(dateTimeString, "yyyy-MM-dd HH:mm:ss");
     }
     public static LocalDate convertStringToLocalDate(String dateString, String pattern) {
-        if (dateString != null && !dateString.trim().equals("")) {
+        if (dateString != null && !dateString.trim().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            LocalDate date = LocalDate.parse(dateString, formatter);
-            return date;
+            return LocalDate.parse(dateString, formatter);
         } else {
             return null;
         }
     }
     public static LocalDate convertStringToLocalDate(String dateString) {
-        if (dateString != null && !dateString.trim().equals("")) {
+        if (dateString != null && !dateString.trim().isEmpty()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(dateString, formatter);
             return date;

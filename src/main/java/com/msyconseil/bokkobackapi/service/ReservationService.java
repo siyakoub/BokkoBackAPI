@@ -150,7 +150,7 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         try {
             getActiveSession(headers);
             List<ReservationDTO> list = new LinkedList<ReservationDTO>();
-            for (ReservationModel reservationModel : reservationRepository.findAll()){
+            for (ReservationModel reservationModel : getAllReservation()){
                 list.add(generateDTOByEntity(reservationModel));
             }
             if (list.isEmpty()) {
@@ -187,11 +187,13 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         try {
             SessionModel sessionModel = getActiveSession(headers);
             ReservationModel reservationModel = getLastReservationByPassager(sessionModel.getUserModel().getId());
-            updateInformation(reservationModel, parameter);
-            reservationModel = reservationRepository.save(reservationModel);
             if (reservationModel != null) {
+                updateInformation(reservationModel, parameter);
+                reservationModel = reservationRepository.save(reservationModel);
                 ReservationDTO reservationDTO = generateDTOByEntity(reservationModel);
                 response.setContent(reservationDTO);
+            } else {
+                throw new ReservationException(ReservationMessageEnum.ERROR_RESERVATION_UPDATE);
             }
         } catch (Exception e) {
             e.fillInStackTrace();

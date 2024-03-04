@@ -39,6 +39,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     private String token;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateInscription;
 
     @NotEmpty(message = "Le statut de l'utilisateur est requis")

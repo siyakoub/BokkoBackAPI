@@ -25,7 +25,7 @@ public interface SessionRepository extends JpaRepository<SessionModel, Integer> 
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE session set actif='T', dateFinSession = NOW() where token = :token", nativeQuery = true)
+    @Query(value = "UPDATE session set actif='T', date_fin_session = NOW() where token = :token", nativeQuery = true)
     public void delete(@Param("token") String token);
 
 }

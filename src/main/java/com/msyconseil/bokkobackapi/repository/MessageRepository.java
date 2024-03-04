@@ -13,8 +13,14 @@ public interface MessageRepository extends JpaRepository<MessageModel, Integer> 
     @Query(value = "select * from Message", nativeQuery = true)
     public List<MessageModel> findAllMessage();
 
+    @Query(value = "SELECT * FROM Message WHERE expediteur_idUtilisateur = :userId OR destinataire_idUtilisateur = :userId ORDER BY dateHeureEnvoi DESC, id DESC LIMIT 1", nativeQuery = true)
+    public MessageModel findLastMessageForUser(@Param("userId") int userId);
+
     @Query(value = "select * from Message where id = :id", nativeQuery = true)
-    public List<MessageModel> findMessageById(@Param("id") int id);
+    public MessageModel findMessageById(@Param("id") int id);
+
+    @Query(value = "select * from Message where expediteur_idUtilisateur = :idExpediteur and destinataire_idUtilisateur = :idDestinataire order by dateHeureEnvoi desc limit 1", nativeQuery = true)
+    public MessageModel findLastMessageInConversation(@Param("idExpediteur") int idExpediteur, int idDestinataire);
 
     @Query(value = "select * from Message where expediteur_idUtilisateur = :id_expediteur", nativeQuery = true)
     public List<MessageModel> findAllMessageByExpediteur(@Param("id_expediteur") int id_expediteur);

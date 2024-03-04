@@ -34,7 +34,7 @@ public class UserModel extends AbstractModel implements Serializable{
     private String email;
 
     @Getter @Setter
-    @Column(name = "motDePasse")
+    @Column(name = "mot_de_Passe")
     private String password;
 
     @Getter @Setter
@@ -42,7 +42,7 @@ public class UserModel extends AbstractModel implements Serializable{
     private String phoneNumber;
 
     @Getter @Setter
-    @Column(name = "dateInscription")
+    @Column(name = "date_inscription")
     private LocalDateTime dateInscription;
 
     @Getter @Setter

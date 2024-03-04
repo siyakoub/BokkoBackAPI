@@ -45,8 +45,8 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public CustomListAnswer<List<UserDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
-        return userService.getAll(headers, page, size);
+    public CustomListAnswer<List<UserDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam String page, @RequestParam String size) throws ErrorException {
+        return userService.getAll(headers, Integer.parseInt(page), Integer.parseInt(size));
     }
 
     @GetMapping("/")
