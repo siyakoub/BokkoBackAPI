@@ -18,7 +18,7 @@ public class AvisModel extends AbstractModel implements Serializable {
 
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "reservation_id_reservation", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "bokko_ibfk_7"))
     private ReservationModel reservationModel;
@@ -42,7 +42,7 @@ public class AvisModel extends AbstractModel implements Serializable {
 
     @Getter
     @Setter
-    @Column(name = "dateHeure")
+    @Column(name = "date_heure")
     private LocalDateTime dateHeureAvis;
 
     public AvisModel() {

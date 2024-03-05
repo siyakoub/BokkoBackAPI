@@ -57,12 +57,16 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     @Override
     public CustomAnswer<ProfilDTO> get(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers.get("token") == null || headers.get("token").isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
         CustomAnswer<ProfilDTO> response = new CustomAnswer<>();
         try{
             SessionModel sessionModel = getActiveSession(headers);
             ProfilModel profilModel = getProfilByUser(sessionModel.getUserModel().getId());
             if (profilModel != null) {
                 ProfilDTO profilDTO = generateDTOByEntity(profilModel);
+                profilDTO.setId(profilModel.getId());
+                profilDTO.getUserDTO().setId(profilModel.getUserModel().getId());
+                profilDTO.getUserDTO().setToken(headers.get("token"));
                 response.setContent(profilDTO);
             }else {
                 throw new ProfilException(ProfilMessageEnum.PROFIL_NOT_FOUND);

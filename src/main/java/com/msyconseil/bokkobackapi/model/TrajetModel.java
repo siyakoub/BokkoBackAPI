@@ -18,7 +18,7 @@ public class TrajetModel extends AbstractModel implements Serializable{
 
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "conducteur_id_utilisateur", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "bokko_ibfk_2"))
     private UserModel userModel;
@@ -35,12 +35,12 @@ public class TrajetModel extends AbstractModel implements Serializable{
 
     @Getter
     @Setter
-    @Column(name = "dateHeureDepart")
+    @Column(name = "date_heure_depart")
     private LocalDateTime dateHeureDepart;
 
     @Getter
     @Setter
-    @Column(name = "nombrePlaces")
+    @Column(name = "nombre_places")
     private int nbPlaces;
 
     @Getter

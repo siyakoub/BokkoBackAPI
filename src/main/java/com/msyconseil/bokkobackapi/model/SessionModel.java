@@ -19,7 +19,7 @@ public class SessionModel extends AbstractModel implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Getter @Setter
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_email", referencedColumnName = "email",  foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     private UserModel userModel;
 
