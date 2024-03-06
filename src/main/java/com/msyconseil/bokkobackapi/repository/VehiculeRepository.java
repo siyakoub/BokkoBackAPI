@@ -13,16 +13,16 @@ public interface VehiculeRepository extends JpaRepository<VehiculeModel, Integer
     @Query(value = "select * from Vehicule", nativeQuery = true)
     public List<VehiculeModel> findAllVehicule();
 
-    @Query(value = "select * from vehicule where conducteur_idUtilisateur = :id", nativeQuery = true)
+    @Query(value = "select * from vehicule where conducteur_id_utilisateur = :id", nativeQuery = true)
     public List<VehiculeModel> findAllByConducteur(@Param("id") int id);
 
-    @Query(value = "select * from vehicule where conducteur_idUtilisateur = :idConducteur ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from vehicule where conducteur_id_utilisateur = :idConducteur ORDER BY id DESC LIMIT 1", nativeQuery = true)
     public VehiculeModel findLastVehiculeByDriver(@Param("idConducteur") int idConducteur);
 
-    @Query(value = "select * from vehicule where conducteur_idUtilisateur = :idConducteur AND used = 1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from vehicule where conducteur_id_utilisateur = :idConducteur AND used = 1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     public VehiculeModel findLastVehiculeByDriverActif(@Param("idConducteur") int idConducteur);
 
-    @Query(value = "select * from vehicule where conducteur_idUtilisateur = :idConducteur and used = 1", nativeQuery = true)
+    @Query(value = "select * from vehicule where conducteur_id_utilisateur = :idConducteur and used = 1", nativeQuery = true)
     public List<VehiculeModel> findAllVehiculeActifByDriver(@Param("idConducteur") int idConducteur);
 
     @Query(value = "select * from vehicule where used = 1", nativeQuery = true)

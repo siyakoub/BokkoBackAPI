@@ -15,22 +15,22 @@ public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
     @Query(value = "select * from Trajet", nativeQuery = true)
     public List<TrajetModel> findAllTrajet();
 
-    @Query(value = "select * from Trajet where conducteur_idUtilisateur = :idConducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from Trajet where conducteur_id_utilisateur = :idConducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByConducteur(@Param("idConducteur") int idConducteur);
 
-    @Query(value = "select * from trajet where statut = 'à venir' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'à venir' and conducteur_id_utilisateur = :id_conducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByStatutToBecomeForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where statut = 'en cours' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'en cours' and conducteur_id_utilisateur = :id_conducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByStatutInProgressForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where statut = 'terminé' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'terminé' and conducteur_id_utilisateur = :id_conducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByStatutFinishedForDriver(@Param("id_conducteur") int idConducteur);
 
-    @Query(value = "select * from trajet where statut = 'annulée' and conducteur_idUtilisateur = :id_conducteur ORDER BY dateHeureDepart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'annulée' and conducteur_id_utilisateur = :id_conducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByStatutCanceledForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
+    @Query(value = "select * from trajet where conducteur_id_utilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByDriver(@Param("id_conducteur") int id_conducteur);
 
     @Query(value = "select * from trajet where id = :id", nativeQuery = true)
@@ -48,16 +48,16 @@ public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
     @Query(value = "select * from trajet where statut = 'annulée'", nativeQuery = true)
     public List<TrajetModel> findAllByStatutCanceled();
 
-    @Query(value = "select * from trajet where statut = 'à venir' and conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'à venir' and conducteur_id_utilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByStatutToBecomeForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where statut = 'en cours' and conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
+    @Query(value = "select * from trajet where statut = 'en cours' and conducteur_id_utilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByStatutInProgressForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where statut= 'terminé' and conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
+    @Query(value = "select * from trajet where statut= 'terminé' and conducteur_id_utilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByStatutFinishedForDriver(@Param("id_conducteur") int id_conducteur);
 
-    @Query(value = "select * from trajet where statut= 'annulée' and conducteur_idUtilisateur = :id_conducteur", nativeQuery = true)
+    @Query(value = "select * from trajet where statut= 'annulée' and conducteur_id_utilisateur = :id_conducteur", nativeQuery = true)
     public List<TrajetModel> findAllByStatutCanceledForDriver(@Param("id_conducteur") int id_conducteur);
 
 

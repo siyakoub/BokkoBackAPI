@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,11 +47,13 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     public ProfilDTO add(ProfilDTO profilDTO) throws ErrorException {
         if (profilDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         ProfilModel profilModel = generateEntityByDTO(profilDTO);
+        profilModel.getUserModel().setPassword(Utils.hash(profilModel.getUserModel().getPassword()));
         profilModel = profilRepository.save(profilModel);
         return generateDTOByEntity(profilModel);
     }
     
     public ProfilDTO add(ProfilModel profilModel) throws ErrorException {
+        profilModel.getUserModel().setPassword(Utils.hash(profilModel.getUserModel().getPassword()));
         return generateDTOByEntity(profilRepository.save(profilModel));
     }
 
@@ -125,10 +128,13 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
         try {
             SessionModel sessionModel = getActiveSession(headers);
             ProfilModel profilModel = getProfilByUser(sessionModel.getUserModel().getId());
+            parameter.getUserDTO().setPassword(Utils.hash(parameter.getUserDTO().getPassword()));
             updateInformation(profilModel, parameter);
             profilModel = profilRepository.save(profilModel);
             if (profilModel != null) {
                 ProfilDTO profilDTO1 = generateDTOByEntity(profilModel);
+                profilDTO1.setId(profilModel.getId());
+                profilDTO1.getUserDTO().setId(profilModel.getUserModel().getId());
                 response.setContent(profilDTO1);
             } else {
                 throw new ProfilException(ProfilMessageEnum.ERROR_PROFIL_CREATION);
@@ -147,17 +153,22 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     @Override
     public CustomAnswer<ProfilDTO> delete(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers.get("token") == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
         CustomAnswer<ProfilDTO> response = new CustomAnswer<>();
         try {
-            getActiveSession(headers);
+            SessionModel sessionModel = getActiveSession(headers);
             UserModel userModel = getUserByEmail(email);
-            ProfilModel profilModel = getProfilByUser(userModel.getId());
-            if (profilModel != null) {
-                profilRepository.deleteProfilByUserId(profilModel.getUserModel().getId());
-                ProfilDTO profilDTO = generateDTOByEntity(profilModel);
-                response.setContent(profilDTO);
-            } else {
-                throw new ProfilException(ProfilMessageEnum.ERROR_PROFIL_DELETE);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                ProfilModel profilModel = getProfilByUser(userModel.getId());
+                if (profilModel != null) {
+                    profilRepository.deleteProfilByUserId(profilModel.getUserModel().getId());
+                    ProfilDTO profilDTO = generateDTOByEntity(profilModel);
+                    response.setContent(profilDTO);
+                } else {
+                    throw new ProfilException(ProfilMessageEnum.ERROR_PROFIL_DELETE);
+                }
+            }else {
+                throw new Exception("Le token donné n'appartient pas à cette utilisateur...");
             }
         } catch (Exception e) {
             e.fillInStackTrace();
@@ -189,7 +200,6 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
                     || (profilRegisterDTO.getPhoto() == null || profilRegisterDTO.getPhoto().isEmpty())
             ) {
                 response.setErrorMessage(ErrorMessageEnum.INVALID_TOKEN.name());
-                return response;
             }
             profilRegisterDTO.setPassword(Utils.hash(profilRegisterDTO.getPassword()));
             List<SqlStoredProcedureAnswer> list = profilRepository.register(
@@ -203,7 +213,6 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
                     profilRegisterDTO.getBio(),
                     profilRegisterDTO.getPhoto()
             );
-            System.out.println(list);
             if (list.getFirst().getStatus().equalsIgnoreCase("OK")) {
                 response.setContent(profilRegisterDTO);
             } else {
