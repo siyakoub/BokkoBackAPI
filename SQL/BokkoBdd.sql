@@ -104,3 +104,4 @@ create table session(
                         foreign key (user_email) references Utilisateur(email)
 );
 
+ALTER TABLE Vehicule MODIFY used tinyint NOT NULL DEFAULT 1;

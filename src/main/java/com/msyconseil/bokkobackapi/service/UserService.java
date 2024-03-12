@@ -10,6 +10,7 @@ import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
 import com.msyconseil.bokkobackapi.service.enumerator.ErrorMessageEnum;
 import com.msyconseil.bokkobackapi.service.enumerator.UserStatusEnum;
 import com.msyconseil.bokkobackapi.service.exception.ErrorException;
+import com.msyconseil.bokkobackapi.service.exception.UserException;
 import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.utils.Utils;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -161,23 +163,15 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
             getActiveSession(headers);
 
             // Utilisation de PageRequest pour paginer les résultats de userRepository.findAll()
-            Page<UserModel> usersPage = userRepository.findAll(PageRequest.of(page, size));
-
-            List<UserDTO> userDTOs = usersPage.getContent().stream().map(userModel -> {
-                try {
-                    return this.generateDTOByEntity(userModel);
-                } catch (ErrorException e) {
-                    throw new RuntimeException(e);
-                }
-            }).collect(Collectors.toList());
-
-            // Création de l'objet CustomListAnswer et remplissage avec les données paginées
-            response.setContent(userDTOs);
-            response.setActualPageNumber(usersPage.getNumber());
-            response.setTotalNumberOfPages(usersPage.getTotalPages());
-            response.setTotalNumberOfElements(usersPage.getTotalElements());
-            response.setNumberOfElementByPage(size);
-            response.setNumberOfFoundElement(userDTOs.size());
+            List<UserDTO> list = new LinkedList<>();
+            for (UserModel userModel : userRepository.findAll()) {
+                list.add(generateDTOByEntity(userModel));
+            }
+            if (list.isEmpty()) {
+                throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
+            } else {
+                response.setContent(list);
+            }
         } catch (ErrorException e) {
             e.fillInStackTrace();
             response.setErrorMessage(ErrorMessageEnum.TOKEN_EXPIRED.getMessage());

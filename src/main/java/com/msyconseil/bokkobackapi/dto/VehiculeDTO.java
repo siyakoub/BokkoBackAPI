@@ -30,6 +30,8 @@ public class VehiculeDTO extends AbstractDTO implements Serializable {
 
     private int annee;
 
+    private int used;
+
     public VehiculeDTO() {
         super();
     }

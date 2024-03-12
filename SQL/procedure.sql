@@ -134,13 +134,14 @@ delimiter //
 drop procedure if exists sp_createPaiement;
 create definer=`root`@`localhost` procedure `sp_createPaiement`(
     in p_reserv_id int,
+    in p_user_id int,
     in p_montant float,
     in p_dateHeure datetime,
     in p_method_paiement ENUM('CB', 'OrangeBank'),
     in p_statut ENUM('en attente', 'confirmée', 'annulée')
 )
 begin
-    insert into Paiement(reservation_id_reservation, montant, date_heure, methode, statut) values (p_reserv_id, p_montant, p_dateHeure, p_method_paiement, p_statut);
+    insert into Paiement(reservation_id_reservation, utilisateur_id_utilisateur, montant, date_heure, methode, statut) values (p_reserv_id, p_user_id, p_montant, p_dateHeure, p_method_paiement, p_statut);
 end; //
 delimiter ;
 

@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @Entity
 @Table(name = "Vehicule")
 public class VehiculeModel extends AbstractModel implements Serializable{
@@ -16,37 +17,35 @@ public class VehiculeModel extends AbstractModel implements Serializable{
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "conducteur_id_utilisateur", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "bokko_ibfk_5"))
     private UserModel userModel;
 
-    @Getter
     @Setter
     @Column(name = "marque")
     private String marque;
 
-    @Getter
     @Setter
     @Column(name = "modele")
     private String modele;
 
-    @Getter
     @Setter
     @Column(name = "couleur")
     private String couleur;
 
-    @Getter
     @Setter
     @Column(name = "immatriculation")
     private String immatriculation;
 
-    @Getter
     @Setter
     @Column(name = "annee")
     private int annee;
+
+    @Setter
+    @Column(name = "used")
+    private int used;
 
     public VehiculeModel() {
         super();
@@ -54,7 +53,7 @@ public class VehiculeModel extends AbstractModel implements Serializable{
 
     @Override
     public String toString(){
-        return "Vehicule [utilisateurConducteur="+ userModel +", marque="+ marque +", modele="+ modele +", couleur="+ couleur +", immatriculation="+ immatriculation +", annee="+ annee +"]";
+        return "Vehicule [utilisateurConducteur="+ userModel +", marque="+ marque +", modele="+ modele +", couleur="+ couleur +", immatriculation="+ immatriculation +", annee="+ annee +", used="+ used +"]";
     }
 
 }

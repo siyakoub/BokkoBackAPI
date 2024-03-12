@@ -4,6 +4,7 @@ import com.msyconseil.bokkobackapi.dto.VehiculeDTO;
 import com.msyconseil.bokkobackapi.model.SessionModel;
 import com.msyconseil.bokkobackapi.model.UserModel;
 import com.msyconseil.bokkobackapi.model.VehiculeModel;
+import com.msyconseil.bokkobackapi.repository.UserRepository;
 import com.msyconseil.bokkobackapi.repository.VehiculeRepository;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomAnswer;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
@@ -15,6 +16,7 @@ import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,6 +27,9 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
 
     @Autowired
     VehiculeRepository vehiculeRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     UserService userService;
@@ -43,8 +48,20 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
 
     @Transactional
     public VehiculeDTO add(VehiculeDTO vehiculeDTO) throws ErrorException {
-        if (vehiculeDTO == null) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (vehiculeDTO == null) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+        // Convertir DTO en modèle en faisant attention à ne pas créer de nouvel utilisateur.
         VehiculeModel vehiculeModel = generateEntityByDTO(vehiculeDTO);
+        vehiculeModel.setUsed(vehiculeDTO.getUsed());
+
+        // Ici, vous devriez avoir l'ID de l'utilisateur dans vehiculeDTO
+        if (vehiculeDTO.getUserDTO().getId() != null) {
+            UserModel user = userRepository.findById(vehiculeDTO.getUserDTO().getId())
+                    .orElseThrow(() -> new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS));
+            vehiculeModel.setUserModel(user);
+        }
+
         vehiculeModel = vehiculeRepository.save(vehiculeModel);
         return generateDTOByEntity(vehiculeModel);
     }
@@ -62,6 +79,8 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
             VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
             if (vehiculeModel != null) {
                 VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                vehiculeDTO.setId(vehiculeModel.getId());
+                vehiculeDTO.setUsed(vehiculeDTO.getUsed());
                 response.setContent(vehiculeDTO);
             }
         } catch (Exception e) {
@@ -89,12 +108,16 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
 
     @Override
     public CustomAnswer<VehiculeDTO> add(Map<String, String> headers, VehiculeDTO parameter) throws ErrorException {
-        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
         CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
         try {
-            SessionModel sessionModel = getActiveSession(headers);
+            getActiveSession(headers);
             VehiculeDTO vehiculeDTO = add(parameter);
-            if (vehiculeDTO == null) throw new VehiculeException(VehiculeMessageEnum.ERROR_CREATION_AUTO);
+            if (vehiculeDTO == null) {
+                throw new VehiculeException(VehiculeMessageEnum.ERROR_CREATION_AUTO);
+            }
             response.setContent(vehiculeDTO);
         } catch (Exception e) {
             e.fillInStackTrace();
@@ -114,6 +137,8 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
                 updateInformation(vehiculeModel, parameter);
                 vehiculeModel = vehiculeRepository.save(vehiculeModel);
                 VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                vehiculeDTO.setUsed(vehiculeModel.getUsed());
+                vehiculeDTO.setId(vehiculeModel.getId());
                 response.setContent(vehiculeDTO);
             }
         } catch (Exception e) {
@@ -131,9 +156,9 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
             SessionModel sessionModel = getActiveSession(headers);
             VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
             if (vehiculeModel != null) {
-                vehiculeRepository.delete(vehiculeModel);
                 VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
                 response.setContent(vehiculeDTO);
+                vehiculeRepository.delete(vehiculeModel);
             } else {
                 throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
             }
