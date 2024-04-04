@@ -12,7 +12,6 @@ public class AbstractModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     @Getter @Setter
     @Column(name ="id")
     protected Integer id;

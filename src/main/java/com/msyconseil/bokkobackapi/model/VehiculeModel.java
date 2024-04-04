@@ -20,7 +20,7 @@ public class VehiculeModel extends AbstractModel implements Serializable{
     @Setter
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "conducteur_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_5"))
+            foreignKey = @ForeignKey(name = "vehicule_ibfk_1"))
     private UserModel userModel;
 
     @Setter

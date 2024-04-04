@@ -20,14 +20,14 @@ public class AvisModel extends AbstractModel implements Serializable {
     @Setter
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "reservation_id_reservation", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_7"))
+            foreignKey = @ForeignKey(name = "avis_ibfk_1"))
     private ReservationModel reservationModel;
 
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "utilisateur_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_10"))
+            foreignKey = @ForeignKey(name = "avis_ibfk_2"))
     private UserModel userModel;
 
     @Getter

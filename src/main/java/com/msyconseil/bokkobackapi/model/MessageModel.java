@@ -20,14 +20,14 @@ public class MessageModel extends AbstractModel implements Serializable {
     @Setter
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "expediteur_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_8"))
+            foreignKey = @ForeignKey(name = "message_ibfk_1"))
     private UserModel expediteur;
 
     @Getter
     @Setter
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "destinataire_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_9"))
+            foreignKey = @ForeignKey(name = "message_ibfk_2"))
     private UserModel destinataire;
 
     @Getter

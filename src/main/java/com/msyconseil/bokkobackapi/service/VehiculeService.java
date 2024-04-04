@@ -16,11 +16,11 @@ import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel> implements IService<VehiculeModel, VehiculeDTO>, ICRUDService<VehiculeDTO, String> {
@@ -102,6 +102,31 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
             throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
         } else {
             response.setContent(list);
+        }
+        return response;
+    }
+
+    public CustomListAnswer<List<VehiculeDTO>> getAllByUser(final Map<String, String> headers, String email) throws ErrorException, VehiculeException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<VehiculeDTO>> response = new CustomListAnswer<>();
+        List<VehiculeDTO> list = new LinkedList<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                for (VehiculeModel vehiculeModel: vehiculeRepository.findAllVehiculeActifByDriver(sessionModel.getUserModel().getId())) {
+                    list.add(generateDTOByEntity(vehiculeModel));
+                }
+                if (list.isEmpty()) {
+                    throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new Exception("Le token ne correspond pas à l'utilisateur...");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
         }
         return response;
     }

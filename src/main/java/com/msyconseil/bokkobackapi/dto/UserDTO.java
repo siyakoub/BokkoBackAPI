@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.msyconseil.bokkobackapi.service.enumerator.UserStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -31,6 +33,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
     @NotEmpty(message = "L'email de l'utilisateur est requis !")
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotEmpty(message = "Le mot de passe est requis !")
     private String password;
 
@@ -44,6 +47,7 @@ public class UserDTO extends AbstractDTO implements Serializable {
 
     @NotEmpty(message = "Le statut de l'utilisateur est requis")
     private UserStatusEnum statut;
+
 
     public UserDTO() {
         super();

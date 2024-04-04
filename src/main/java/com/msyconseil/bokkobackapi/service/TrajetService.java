@@ -1,9 +1,13 @@
 package com.msyconseil.bokkobackapi.service;
 
 import com.msyconseil.bokkobackapi.dto.TrajetDTO;
+import com.msyconseil.bokkobackapi.dto.VehiculeDTO;
 import com.msyconseil.bokkobackapi.model.SessionModel;
 import com.msyconseil.bokkobackapi.model.TrajetModel;
+import com.msyconseil.bokkobackapi.model.UserModel;
+import com.msyconseil.bokkobackapi.model.VehiculeModel;
 import com.msyconseil.bokkobackapi.repository.TrajetRepository;
+import com.msyconseil.bokkobackapi.repository.UserRepository;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomAnswer;
 import com.msyconseil.bokkobackapi.service.customanswer.CustomListAnswer;
 import com.msyconseil.bokkobackapi.service.enumerator.ErrorMessageEnum;
@@ -31,20 +35,58 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserRepository userRepository;
+
     public TrajetService(SessionService sessionService) {
         super(sessionService);
     }
 
     @Transactional
     public TrajetDTO add(TrajetDTO trajetDTO) throws ErrorException {
-        if (trajetDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
+        if (trajetDTO == null) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+        // Convertir DTO en modèle en faisant attention à ne pas créer de nouvel utilisateur.
         TrajetModel trajetModel = generateEntityByDTO(trajetDTO);
+
+        // Ici, vous devriez avoir l'ID de l'utilisateur dans vehiculeDTO
+        if (trajetDTO.getUserDTO().getId() != null) {
+            UserModel user = userRepository.findById(trajetDTO.getUserDTO().getId())
+                    .orElseThrow(() -> new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS));
+            trajetModel.setUserModel(user);
+        }
+
         trajetModel = trajetRepository.save(trajetModel);
         return generateDTOByEntity(trajetModel);
     }
 
     public TrajetDTO add(TrajetModel trajetModel) throws ErrorException {
         return generateDTOByEntity(trajetRepository.save(trajetModel));
+    }
+
+    public CustomAnswer<TrajetDTO> getById(final Map<String, String> headers, String email, int idTrajet) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<TrajetDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                TrajetModel trajetModel = getTrajetById(idTrajet);
+                if (trajetModel != null) {
+                    TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                    trajetDTO.getUserDTO().setToken(sessionModel.getToken());
+                    trajetModel.getUserModel().setId(sessionModel.getUserModel().getId());
+                    trajetModel.setId(trajetModel.getId());
+                    response.setContent(trajetDTO);
+                }
+            } else {
+                throw new Exception("Le token ne correspond pas au bonne utilisateur...");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
     }
 
     private void updateInformation(TrajetModel trajetModel, TrajetDTO trajetDTO) {
@@ -195,7 +237,9 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
             SessionModel sessionModel = getActiveSession(headers);
             List<TrajetDTO> list = new LinkedList<TrajetDTO>();
             for (TrajetModel trajetModel : trajetRepository.findAllTrajet()) {
-                list.add(generateDTOByEntity(trajetModel));
+                TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                trajetDTO.setId(trajetModel.getId());
+                list.add(trajetDTO);
             }
             if (list.isEmpty()) {
                 throw new TrajetException(TrajetMessageEnum.NOT_FOUND);

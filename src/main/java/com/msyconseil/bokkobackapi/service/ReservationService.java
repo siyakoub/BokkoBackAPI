@@ -42,15 +42,31 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
     @Autowired
     TrajetService trajetService;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    TrajetRepository trajetRepository;
+
 
     public ReservationService(SessionService sessionService) {
         super(sessionService);
     }
 
     @Transactional
-    public ReservationDTO add(ReservationDTO reservationDTO) throws ErrorException {
+    public ReservationDTO add(ReservationDTO reservationDTO) throws ErrorException, TrajetException {
         if (reservationDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         ReservationModel reservationModel = generateEntityByDTO(reservationDTO);
+        if (reservationDTO.getUserDTO().getId() != null) {
+            if (reservationDTO.getTrajetDTO().getId() != null) {
+                UserModel user = userRepository.findById(reservationDTO.getUserDTO().getId())
+                        .orElseThrow(() -> new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS));
+                reservationModel.setUserModel(user);
+                TrajetModel trajetModel = trajetRepository.findById(reservationDTO.getTrajetDTO().getId())
+                        .orElseThrow(() -> new TrajetException(TrajetMessageEnum.NOT_FOUND));
+                reservationModel.setTrajetModel(trajetModel);
+            }
+        }
         reservationModel = reservationRepository.save(reservationModel);
         return generateDTOByEntity(reservationModel);
     }

@@ -127,13 +127,11 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
 
             // Supposons que getUserByEmail(email) pourrait retourner null si l'utilisateur n'est pas trouvé.
             UserModel entity = getUserByEmail(email); // Utilisation directe de l'email fourni au lieu de celui de la sessionModel
-
             if (entity == null) {
                 // Si aucun utilisateur n'est trouvé, plutôt que de retourner un objet vide,
                 // lever une exception indiquant que l'utilisateur n'est pas trouvé.
                 throw new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS);
             }
-
             // Conversion de l'entité UserModel en DTO.
             UserDTO userDTO = generateDTOByEntity(entity);
             userDTO.setToken(headers.get("token"));
@@ -143,9 +141,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
             response.setContent(userDTO);
         } catch (Exception e) {
             e.fillInStackTrace();
-
         }
-
         return response;
     }
 

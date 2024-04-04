@@ -18,16 +18,16 @@ public class ReservationModel extends AbstractModel implements Serializable{
 
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "trajet_id_trajet", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_3"))
+            foreignKey = @ForeignKey(name = "reservation_ibfk_1"))
     private TrajetModel trajetModel;
 
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "passager_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_4"))
+            foreignKey = @ForeignKey(name = "reservation_ibfk_2"))
     private UserModel userModel;
 
     @Getter

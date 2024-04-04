@@ -18,9 +18,9 @@ public class TrajetModel extends AbstractModel implements Serializable{
 
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "conducteur_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_2"))
+            foreignKey = @ForeignKey(name = "trajet_ibfk_1"))
     private UserModel userModel;
 
     @Getter

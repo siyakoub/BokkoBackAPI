@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class AbstractDTO {
 
-    @Schema(hidden = true, description = "Id de l'instance en question. Elle est renseignée automatiquement par le système")
+    @Schema(description = "Id de l'instance en question. Elle est renseignée automatiquement par le système")
     protected transient Integer Id;
 
 }

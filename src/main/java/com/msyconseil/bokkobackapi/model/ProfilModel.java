@@ -21,7 +21,7 @@ public class ProfilModel extends AbstractModel implements Serializable {
     @Setter
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "utilisateur_id_utilisateur", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "bokko_ibfk_1"))
+            foreignKey = @ForeignKey(name = "profil_ibfk_1 "))
     private UserModel userModel;
 
     @Getter

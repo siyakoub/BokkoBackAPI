@@ -26,6 +26,11 @@ public class TrajetController {
         return trajetService.add(headers, trajetDTO);
     }
 
+    @GetMapping("/byid")
+    public CustomAnswer<TrajetDTO> getById(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int idTrajet) throws ErrorException {
+        return trajetService.getById(headers, email, idTrajet);
+    }
+
     @GetMapping("/all")
     public CustomListAnswer<List<TrajetDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException {
         return trajetService.getAll(headers, page, size);
