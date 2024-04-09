@@ -27,7 +27,6 @@ public interface ProfilRepository extends JpaRepository<ProfilModel, Integer> {
     @Query(value = "CALL sp_createProfil(:name, :firstName, :email, :password, :phoneNumber, :dateInscription , :statut, :bio, :picture)", nativeQuery = true)
     public List<SqlStoredProcedureAnswer> register(@Param("name") String name, @Param("firstName") String firstName, @Param("email") String email, @Param("password") String password, @Param("phoneNumber") String phoneNumber, @Param("dateInscription") LocalDateTime dateInscription, @Param("statut") String statut, @Param("bio") String bio, @Param("picture") String picture);
 
-    @Modifying
     @Query(value = "DELETE from Profil where utilisateur_id_utilisateur = :id_user", nativeQuery = true)
     public void deleteProfilByUserId(@Param("id_user") int id_user);
 

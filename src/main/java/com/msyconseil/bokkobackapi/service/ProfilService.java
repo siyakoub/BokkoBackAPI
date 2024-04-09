@@ -161,9 +161,10 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
             if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
                 ProfilModel profilModel = getProfilByUser(userModel.getId());
                 if (profilModel != null) {
-                    profilRepository.deleteProfilByUserId(profilModel.getUserModel().getId());
-                    ProfilDTO profilDTO = generateDTOByEntity(profilModel);
-                    response.setContent(profilDTO);
+                    profilRepository.delete(profilModel);
+                    System.out.println("ok");
+                    userRepository.delete(profilModel.getUserModel());
+                    response.setContent(null);
                 } else {
                     throw new ProfilException(ProfilMessageEnum.ERROR_PROFIL_DELETE);
                 }
@@ -226,9 +227,15 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
     }
 
     private void updateInformation(ProfilModel profilModel, ProfilDTO profilDTO) {
+        profilModel.getUserModel().setName(profilDTO.getUserDTO().getName());
+        profilModel.getUserModel().setFirstName(profilDTO.getUserDTO().getFirstName());
+        profilModel.getUserModel().setEmail(profilDTO.getUserDTO().getEmail());
+        profilModel.getUserModel().setPhoneNumber(profilDTO.getUserDTO().getPhoneNumber());
         profilModel.setBio(profilDTO.getBio());
         profilModel.setPictureProfil(profilDTO.getPictureProfil());
     }
+
+
 
     @Override
     public ProfilModel generateEntityByDTO(ProfilDTO dto) throws ErrorException {

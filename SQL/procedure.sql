@@ -76,7 +76,7 @@ create definer=`root`@`localhost` procedure `sp_createProfil`(
     in p_dateInscription datetime,
     in p_statut enum('A', 'I', 'B'),
     in p_biographie text,
-    in p_photo varchar(255)
+    in p_photo LONGTEXT
 )
 begin
     declare new_user_id int;

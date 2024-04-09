@@ -105,3 +105,12 @@ create table session(
 );
 
 ALTER TABLE Vehicule MODIFY used tinyint NOT NULL DEFAULT 1;
+
+UPDATE utilisateur
+SET
+    nom = COALESCE(NULLIF(nom, ''), 'Si Yakoub'),
+    prenom = COALESCE(NULLIF(prenom, ''), 'Mourad'),
+    email = COALESCE(NULLIF(email, ''), 'siyakoubm@gmail.com'),
+    telephone = COALESCE(NULLIF(telephone, ''), '0681412651')
+WHERE
+    nom = '' OR prenom = '' OR email = '' OR telephone = '';
