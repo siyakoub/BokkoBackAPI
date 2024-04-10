@@ -234,6 +234,7 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         dto.setAnnee(entity.getAnnee());
         dto.setCouleur(entity.getCouleur());
         dto.setImmatriculation(entity.getImmatriculation());
+        dto.setId(entity.getId());
         return dto;
     }
 
