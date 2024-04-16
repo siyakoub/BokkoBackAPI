@@ -80,7 +80,7 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
             if (vehiculeModel != null) {
                 VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
                 vehiculeDTO.setId(vehiculeModel.getId());
-                vehiculeDTO.setUsed(vehiculeDTO.getUsed());
+                vehiculeDTO.setUsed(vehiculeModel.getUsed());
                 response.setContent(vehiculeDTO);
             }
         } catch (Exception e) {
@@ -96,7 +96,9 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         CustomListAnswer<List<VehiculeDTO>> response = new CustomListAnswer<>();
         List<VehiculeDTO> list = new LinkedList<>();
         for (VehiculeModel vehiculeModel : vehiculeRepository.findAllVehiculeActif()) {
-            list.add(generateDTOByEntity(vehiculeModel));
+            VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+            vehiculeDTO.setUsed(vehiculeModel.getUsed());
+            list.add(vehiculeDTO);
         }
         if (list.isEmpty()) {
             throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);

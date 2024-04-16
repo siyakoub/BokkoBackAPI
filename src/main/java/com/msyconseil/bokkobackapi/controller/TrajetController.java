@@ -36,6 +36,11 @@ public class TrajetController {
         return trajetService.getAll(headers, page, size);
     }
 
+    @GetMapping("/allbydriver")
+    public CustomListAnswer<List<TrajetDTO>> getAllByDriver(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
+        return trajetService.getAllByDriver(headers, email);
+    }
+
     @PutMapping("/")
     public CustomAnswer<TrajetDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody TrajetDTO trajetDTO, @RequestParam String email) throws ErrorException {
         return trajetService.update(headers, trajetDTO, email);
@@ -51,8 +56,10 @@ public class TrajetController {
         return trajetService.delete(headers, email);
     }
 
-
-
+    @DeleteMapping("/byid")
+    public CustomAnswer<TrajetDTO> deleteById(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int id) throws ErrorException {
+        return trajetService.deleteById(headers, email, id);
+    }
 
 
 }

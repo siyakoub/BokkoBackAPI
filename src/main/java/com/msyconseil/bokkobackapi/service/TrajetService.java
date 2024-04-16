@@ -229,6 +229,33 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         return response;
     }
 
+    public CustomListAnswer<List<TrajetDTO>> getAllByDriver(final Map<String, String> headers, String email) throws ErrorException{
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<TrajetDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            List<TrajetDTO> list = new LinkedList<>();
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                for (TrajetModel trajetModel : getAllTrajetByDriver(sessionModel.getUserModel().getId())) {
+                    TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                    trajetDTO.setId(trajetModel.getId());
+                    list.add(trajetDTO);
+                }
+                if (list.isEmpty()) {
+                    throw new TrajetException(TrajetMessageEnum.NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new Exception("Le token n'appartient pas à cette utilisateur...");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
     @Override
     public CustomListAnswer<List<TrajetDTO>> getAll(final Map<String, String> headers, int page, int size) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
@@ -311,6 +338,30 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
                 }
             } else {
                 throw new Exception("Le token n'appartient pas à cette utilisateur...");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomAnswer<TrajetDTO> deleteById(final Map<String, String> headers, String email, int id) throws ErrorException{
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<TrajetDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                TrajetModel trajetModel = getTrajetById(id);
+                if (trajetModel != null) {
+                    trajetRepository.delete(trajetModel);
+                    TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                    response.setContent(trajetDTO);
+                } else {
+                    throw new TrajetException(TrajetMessageEnum.NOT_FOUND);
+                }
+            } else {
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
             }
         } catch (Exception e) {
             e.fillInStackTrace();
