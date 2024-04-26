@@ -114,3 +114,7 @@ SET
     telephone = COALESCE(NULLIF(telephone, ''), '0681412651')
 WHERE
     nom = '' OR prenom = '' OR email = '' OR telephone = '';
+
+ALTER TABLE Reservation MODIFY COLUMN statut ENUM('en attente', 'confirmé', 'fini', 'Annulé');
+
+ALTER TABLE Reservation ADD UNIQUE INDEX UK_passager_trajet (passager_id_utilisateur, trajet_id_trajet);

@@ -82,6 +82,52 @@ public class AvisService extends AbstractService<AvisDTO, AvisModel> implements 
         return generateDTOByEntity(avisRepository.save(avisModel));
     }
 
+    public CustomListAnswer<List<AvisDTO>> getAllByUser(final Map<String, String> headers, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<AvisDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                List<AvisDTO> list = new LinkedList<>();
+                for (AvisModel avisModel : getAllAvisByUser(sessionModel.getUserModel().getId())) {
+                    list.add(generateDTOByEntity(avisModel));
+                }
+                if (list.isEmpty()) {
+                    throw new AvisException(AvisMessageEnum.REVIEW_NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomListAnswer<List<AvisDTO>> getAllByReservation(final Map<String, String> headers, String email, int idReservation) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<AvisDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                List<AvisDTO> list = new LinkedList<>();
+                for (AvisModel avisModel : getAllAvisByReservation(idReservation)) {
+                    list.add(generateDTOByEntity(avisModel));
+                }
+                if (list.isEmpty()) {
+                    throw new AvisException(AvisMessageEnum.REVIEW_NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
     @Override
     public CustomAnswer<AvisDTO> get(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);

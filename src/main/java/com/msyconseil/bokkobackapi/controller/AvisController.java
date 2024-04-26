@@ -34,6 +34,16 @@ public class AvisController {
         return avisService.getAll(headers, page, size);
     }
 
+    @GetMapping("/allbyuser")
+    public CustomListAnswer<List<AvisDTO>> getAllByUser(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
+        return avisService.getAllByUser(headers, email);
+    }
+
+    @GetMapping("/allbybooking")
+    public CustomListAnswer<List<AvisDTO>> getAllByReservation(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int idReservation) throws ErrorException {
+        return avisService.getAllByReservation(headers, email, idReservation);
+    }
+
     @PutMapping("/")
     public CustomAnswer<AvisDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody AvisDTO avisDTO, @RequestParam String email) throws ErrorException {
         return avisService.update(headers, avisDTO, email);

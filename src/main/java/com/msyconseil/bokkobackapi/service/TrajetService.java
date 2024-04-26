@@ -114,6 +114,7 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         entity.setNbPlaces(dto.getNbPlaces());
         entity.setPrix(dto.getPrix());
         entity.setStatut(dto.getStatut());
+        entity.setId(dto.getId());
         return entity;
     }
 
@@ -128,6 +129,7 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         trajetDTO.setNbPlaces(entity.getNbPlaces());
         trajetDTO.setPrix(entity.getPrix());
         trajetDTO.setStatut(entity.getStatut());
+        trajetDTO.setId(entity.getId());
         return trajetDTO;
     }
 
@@ -206,6 +208,7 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         trajetModel.setNbPlaces(dto.getNbPlaces());
         trajetModel.setPrix(dto.getPrix());
         trajetModel.setStatut(dto.getStatut());
+        trajetModel.setId(dto.getId());
         return trajetModel;
     }
 

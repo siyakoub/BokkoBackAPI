@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.springframework.data.projection.EntityProjection.ProjectionType.DTO;
 
@@ -58,10 +59,10 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         if (reservationDTO == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         ReservationModel reservationModel = generateEntityByDTO(reservationDTO);
         if (reservationDTO.getUserDTO().getId() != null) {
+            UserModel user = userRepository.findById(reservationDTO.getUserDTO().getId())
+                    .orElseThrow(() -> new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS));
+            reservationModel.setUserModel(user);
             if (reservationDTO.getTrajetDTO().getId() != null) {
-                UserModel user = userRepository.findById(reservationDTO.getUserDTO().getId())
-                        .orElseThrow(() -> new ErrorException(ErrorMessageEnum.ENTITY_NOT_EXISTS));
-                reservationModel.setUserModel(user);
                 TrajetModel trajetModel = trajetRepository.findById(reservationDTO.getTrajetDTO().getId())
                         .orElseThrow(() -> new TrajetException(TrajetMessageEnum.NOT_FOUND));
                 reservationModel.setTrajetModel(trajetModel);
@@ -131,6 +132,22 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         return reservationRepository.findLastReservationFinishedByTrajet(idTrajet);
     }
 
+    private List<ReservationModel> getAllReservationByTrajetInProgress(int idTrajet) {
+        return reservationRepository.findAllReservationByTrajetInProgress(idTrajet);
+    }
+
+    private List<ReservationModel> getAllReservationByTrajetConfirmed(int idTrajet) {
+        return reservationRepository.findAllReservationByTrajetConfirmed(idTrajet);
+    }
+
+    private List<ReservationModel> getAllReservationByTrajetFinished(int idTrajet) {
+        return reservationRepository.findAllReservationByTrajetFinished(idTrajet);
+    }
+
+    private List<ReservationModel> getAllReservationByTrajetCanceled(int idTrajet) {
+        return reservationRepository.findAllReservationByTrajetCanceled(idTrajet);
+    }
+
     private ReservationModel getLastReservationByPassager(int idPassager) {
         return reservationRepository.findLastReservationByPassager(idPassager);
     }
@@ -138,6 +155,7 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
     private ReservationModel getLastReservationByTrajet(int idTrajet) {
         return reservationRepository.findLastReservationByTrajet(idTrajet);
     }
+
 
     @Override
     public CustomAnswer<ReservationDTO> get(final Map<String, String> headers, String email) throws ErrorException {
@@ -151,6 +169,81 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
                 response.setContent(reservationDTO);
             } else {
                 throw new ReservationException(ReservationMessageEnum.RESERVATION_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomListAnswer<List<ReservationDTO>> getAllByTrajetInProgress(final Map<String, String> headers, String email, int idTrajet) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<ReservationDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                List<ReservationDTO> list = new LinkedList<>();
+                for (ReservationModel reservationModel : getAllReservationByTrajetInProgress(idTrajet)) {
+                    list.add(generateDTOByEntity(reservationModel));
+                }
+                if (list.isEmpty()) {
+                    throw new ReservationException(ReservationMessageEnum.RESERVATION_NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomListAnswer<List<ReservationDTO>> getAllByTrajet(final Map<String, String> headers, String email, int idTrajet) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<ReservationDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                List<ReservationDTO> list = new LinkedList<>();
+                for (ReservationModel reservationModel : getAllReservationByTrajet(idTrajet)) {
+                    list.add(generateDTOByEntity(reservationModel));
+                }
+                if (list.isEmpty()) {
+                    throw new ReservationException(ReservationMessageEnum.RESERVATION_NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomListAnswer<List<ReservationDTO>> getAllByUser(final Map<String, String> headers, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomListAnswer<List<ReservationDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
+                List<ReservationDTO> list = new LinkedList<>();
+                for (ReservationModel reservationModel : getAllReservationByPassager(sessionModel.getUserModel().getId())) {
+                    list.add(generateDTOByEntity(reservationModel));
+                }
+                if (list.isEmpty()) {
+                    throw new ReservationException(ReservationMessageEnum.RESERVATION_NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
             }
         } catch (Exception e) {
             e.fillInStackTrace();
@@ -202,14 +295,42 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         CustomAnswer<ReservationDTO> response = new CustomAnswer<>();
         try {
             SessionModel sessionModel = getActiveSession(headers);
-            ReservationModel reservationModel = getLastReservationByPassager(sessionModel.getUserModel().getId());
-            if (reservationModel != null) {
-                updateInformation(reservationModel, parameter);
-                reservationModel = reservationRepository.save(reservationModel);
-                ReservationDTO reservationDTO = generateDTOByEntity(reservationModel);
-                response.setContent(reservationDTO);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                ReservationModel reservationModel = getById(parameter.getId());
+                if (reservationModel != null) {
+                    updateInformation(reservationModel, parameter);
+                    reservationModel = reservationRepository.save(reservationModel);
+                    ReservationDTO reservationDTO = generateDTOByEntity(reservationModel);
+                    response.setContent(reservationDTO);
+                } else {
+                    throw new ReservationException(ReservationMessageEnum.ERROR_RESERVATION_UPDATE);
+                }
             } else {
-                throw new ReservationException(ReservationMessageEnum.ERROR_RESERVATION_UPDATE);
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
+    public CustomAnswer<ReservationDTO> deleteById(final Map<String, String> headers, String email, int idReservation) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        CustomAnswer<ReservationDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                ReservationModel reservationModel = getById(idReservation);
+                if (reservationModel != null) {
+                    reservationRepository.deleteById(reservationModel.getId());
+                    ReservationDTO reservationDTO = generateDTOByEntity(reservationModel);
+                    response.setContent(reservationDTO);
+                } else {
+                    throw new ReservationException(ReservationMessageEnum.RESERVATION_NOT_FOUND);
+                }
+            } else {
+                throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
             }
         } catch (Exception e) {
             e.fillInStackTrace();
@@ -260,6 +381,7 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         entity.setNbPlaceReserv(dto.getNbPlacesReserv());
         entity.setDateReservation(dto.getDateReservation());
         entity.setStatut(dto.getStatut());
+        entity.setId(dto.getId());
         return entity;
     }
 
@@ -272,6 +394,7 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         reservationDTO.setNbPlacesReserv(entity.getNbPlaceReserv());
         reservationDTO.setDateReservation(entity.getDateReservation());
         reservationDTO.setStatut(entity.getStatut());
+        reservationDTO.setId(entity.getId());
         return reservationDTO;
     }
 
@@ -284,6 +407,7 @@ public class ReservationService extends AbstractService<ReservationDTO, Reservat
         entity.setNbPlaceReserv(dto.getNbPlacesReserv());
         entity.setDateReservation(dto.getDateReservation());
         entity.setStatut(dto.getStatut());
+        entity.setId(dto.getId());
         return entity;
     }
 }

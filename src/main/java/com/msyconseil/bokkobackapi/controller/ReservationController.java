@@ -25,6 +25,11 @@ public class ReservationController {
         return reservationService.add(headers, reservationDTO);
     }
 
+    @GetMapping("/bypassager")
+    public CustomListAnswer<List<ReservationDTO>> getAllByUser(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException{
+        return reservationService.getAllByUser(headers, email);
+    }
+
     @PutMapping("/")
     public CustomAnswer<ReservationDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody ReservationDTO parameter, @RequestParam String email) throws ErrorException {
         return reservationService.update(headers, parameter, email);
@@ -45,5 +50,19 @@ public class ReservationController {
         return reservationService.get(headers, email);
     }
 
+    @DeleteMapping("/byid")
+    public CustomAnswer<ReservationDTO> deleteById(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int idReservation) throws ErrorException {
+        return reservationService.deleteById(headers, email, idReservation);
+    }
+
+    @GetMapping("/allbytrajet")
+    public CustomListAnswer<List<ReservationDTO>> getAllByTrajet(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int idTrajet) throws ErrorException {
+        return reservationService.getAllByTrajet(headers, email, idTrajet);
+    }
+
+    @GetMapping("/allbytrajetinprogress")
+    public CustomListAnswer<List<ReservationDTO>> getAllByTrajetInProgress(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int idTrajet) throws ErrorException {
+        return reservationService.getAllByTrajetInProgress(headers, email, idTrajet);
+    }
 
 }

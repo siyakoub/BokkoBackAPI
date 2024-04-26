@@ -135,7 +135,6 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
             // Conversion de l'entité UserModel en DTO.
             UserDTO userDTO = generateDTOByEntity(entity);
             userDTO.setToken(headers.get("token"));
-            userDTO.setId(entity.getId());
 
             // Préparation et retour de la réponse.
             response.setContent(userDTO);
@@ -259,6 +258,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
     public UserModel mapDTOToEntity(UserDTO dto) throws ErrorException {
         if (dto == null) throw new ErrorException(ErrorMessageEnum.ENTITY_FABRICATION_ERROR);
         UserModel entity = new UserModel();
+        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setFirstName(dto.getFirstName());
         entity.setEmail(dto.getEmail());
@@ -272,6 +272,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
     @Override
     public UserModel mapEntityByWithDTO(UserModel entity, UserDTO dto) throws ErrorException {
         if (entity == null) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        entity.setId(dto.getId());
         entity.setName(dto.getName());
         entity.setFirstName(dto.getFirstName());
         entity.setEmail(dto.getEmail());
@@ -286,6 +287,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
     public UserDTO generateDTOByEntity(UserModel entity) throws ErrorException {
         if (entity == null) throw new ErrorException(ErrorMessageEnum.DTO_FABRICATION_ERROR);
         UserDTO dto = new UserDTO();
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setFirstName(entity.getFirstName());
         dto.setEmail(entity.getEmail());

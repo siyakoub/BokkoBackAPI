@@ -40,6 +40,11 @@ public class ProfilController {
         return profilService.get(headers, email);
     }
 
+    @GetMapping("/getaprofil")
+    public CustomAnswer<ProfilDTO> getAProfil(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
+        return profilService.getAProfil(headers, email);
+    }
+
     @GetMapping("/all")
     public CustomListAnswer<List<ProfilDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, int size) throws ErrorException {
         return profilService.getAll(headers, page, size);

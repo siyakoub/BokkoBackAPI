@@ -54,6 +54,18 @@ public interface ReservationRepository extends JpaRepository<ReservationModel, I
     @Query(value = "select * from Reservation where statut = 'en attente'", nativeQuery = true)
     public List<ReservationModel> findReservationByStatutInProgress();
 
+    @Query(value = "select * from Reservation where statut = 'en attente' and trajet_id_trajet = :idTrajet", nativeQuery = true)
+    public List<ReservationModel> findAllReservationByTrajetInProgress(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where statut = 'confirmé' and trajet_id_trajet = :idTrajet", nativeQuery = true)
+    public List<ReservationModel> findAllReservationByTrajetConfirmed(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where statut = 'fini' and trajet_id_trajet = :idTrajet", nativeQuery = true)
+    public List<ReservationModel> findAllReservationByTrajetFinished(@Param("idTrajet") int idTrajet);
+
+    @Query(value = "select * from Reservation where statut = 'Annulé' and trajet_id_trajet = :idTrajet", nativeQuery = true)
+    public List<ReservationModel> findAllReservationByTrajetCanceled(@Param("idTrajet") int idTrajet);
+
     @Query(value = "select * from Reservation where statut = 'confirmé'", nativeQuery = true)
     public List<ReservationModel> findReservationByStatutInConfirmation();
 
