@@ -1,8 +1,8 @@
 DROP database IF EXISTS BokkoDB;
 CREATE DATABASE BokkoDB;
 USE BokkoDB;
-DROP TABLE IF EXISTS Utilisateur;
-CREATE TABLE Utilisateur (
+DROP TABLE IF EXISTS utilisateur;
+CREATE TABLE utilisateur (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         nom VARCHAR(255) not null,
                         prenom VARCHAR(255) not null,
@@ -12,8 +12,8 @@ CREATE TABLE Utilisateur (
                         date_inscription datetime not null,
                         statut enum('A', 'I', 'B') not null
 );
-drop table if exists Profil;
-CREATE TABLE Profil (
+drop table if exists profil;
+CREATE TABLE profil (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         utilisateur_id_utilisateur INT,
                         bio TEXT,
@@ -21,7 +21,7 @@ CREATE TABLE Profil (
                         FOREIGN KEY (utilisateur_id_utilisateur) REFERENCES Utilisateur(id)
 );
 drop table if exists Trajet;
-CREATE TABLE Trajet (
+CREATE TABLE trajet (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         conducteur_id_utilisateur INT,
                         depart VARCHAR(255) not null,
@@ -33,7 +33,7 @@ CREATE TABLE Trajet (
                         FOREIGN KEY (conducteur_id_utilisateur) REFERENCES Utilisateur(id)
 );
 drop table if exists Reservation;
-CREATE TABLE Reservation (
+CREATE TABLE reservation (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         trajet_id_trajet INT,
                         passager_id_utilisateur INT,
@@ -44,7 +44,7 @@ CREATE TABLE Reservation (
                         FOREIGN KEY (passager_id_utilisateur) REFERENCES Utilisateur(id)
 );
 drop table if exists Vehicule;
-CREATE TABLE Vehicule (
+CREATE TABLE vehicule (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         conducteur_id_utilisateur INT,
                         marque VARCHAR(255),
@@ -56,7 +56,7 @@ CREATE TABLE Vehicule (
                         FOREIGN KEY (conducteur_id_utilisateur) REFERENCES Utilisateur(id)
 );
 drop table if exists Paiement;
-CREATE TABLE Paiement (
+CREATE TABLE paiement (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         reservation_id_reservation INT not null,
                         utilisateur_id_utilisateur int not null,
@@ -68,7 +68,7 @@ CREATE TABLE Paiement (
                         foreign key (utilisateur_id_utilisateur) references Utilisateur(id)
 );
 drop table if exists Avis;
-CREATE TABLE Avis (
+CREATE TABLE avis (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         reservation_id_reservation INT not null,
                         utilisateur_id_utilisateur int not null,
@@ -79,7 +79,7 @@ CREATE TABLE Avis (
                         FOREIGN KEY (utilisateur_id_utilisateur) references Utilisateur(id)
 );
 drop table if exists Message;
-CREATE TABLE Message (
+CREATE TABLE message (
                          id INT AUTO_INCREMENT PRIMARY KEY,
                          expediteur_id_utilisateur INT,
                          destinataire_id_utilisateur INT,
@@ -90,7 +90,7 @@ CREATE TABLE Message (
                          FOREIGN KEY (destinataire_id_utilisateur) REFERENCES Utilisateur(id)
 );
 
-alter table Utilisateur
+alter table utilisateur
     ADD INDEX idx_adresseEmail (email);
 
 drop table if exists session;
@@ -104,7 +104,7 @@ create table session(
                         foreign key (user_email) references Utilisateur(email)
 );
 
-ALTER TABLE Vehicule MODIFY used tinyint NOT NULL DEFAULT 1;
+ALTER TABLE vehicule MODIFY used tinyint NOT NULL DEFAULT 1;
 
 UPDATE utilisateur
 SET
@@ -115,6 +115,6 @@ SET
 WHERE
     nom = '' OR prenom = '' OR email = '' OR telephone = '';
 
-ALTER TABLE Reservation MODIFY COLUMN statut ENUM('en attente', 'confirmé', 'fini', 'Annulé');
+ALTER TABLE reservation MODIFY COLUMN statut ENUM('en attente', 'confirmé', 'fini', 'Annulé');
 
-ALTER TABLE Reservation ADD UNIQUE INDEX UK_passager_trajet (passager_id_utilisateur, trajet_id_trajet);
+ALTER TABLE reservation ADD UNIQUE INDEX UK_passager_trajet (passager_id_utilisateur, trajet_id_trajet);

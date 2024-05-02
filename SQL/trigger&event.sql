@@ -9,7 +9,7 @@ CREATE EVENT update_trajet_status
         STARTS CURRENT_TIMESTAMP
     DO
     BEGIN
-        UPDATE Trajet
+        UPDATE trajet
         SET statut = 'en cours'
         WHERE date_heure_depart <= NOW() AND statut = 'à venir';
     END //
@@ -20,10 +20,10 @@ DELIMITER //
 
 DROP TRIGGER IF EXISTS after_reservation_insert;
 CREATE TRIGGER after_reservation_insert
-    AFTER INSERT ON Reservation
+    AFTER INSERT ON reservation
     FOR EACH ROW
 BEGIN
-    UPDATE Trajet
+    UPDATE trajet
     SET nombre_places = nombre_places - NEW.nombre_places_reservees
     WHERE id = NEW.trajet_id_trajet;
 END //
@@ -33,10 +33,10 @@ DELIMITER ;
 DELIMITER //
 DROP TRIGGER IF EXISTS after_reservation_delete;
 CREATE TRIGGER after_reservation_delete
-    AFTER DELETE ON Reservation
+    AFTER DELETE ON reservation
     FOR EACH ROW
 BEGIN
-    UPDATE Trajet
+    UPDATE trajet
     SET nombre_places = nombre_places + OLD.nombre_places_reservees
     WHERE id = OLD.trajet_id_trajet;
 END //
@@ -46,13 +46,13 @@ DELIMITER ;
 DELIMITER //
 drop trigger  if exists before_reservation_insert;
 CREATE TRIGGER before_reservation_insert
-    BEFORE INSERT ON Reservation
+    BEFORE INSERT ON reservation
     FOR EACH ROW
 BEGIN
     DECLARE available_places INT;
 
     SELECT nombre_places INTO available_places
-    FROM Trajet
+    FROM trajet
     WHERE id = NEW.trajet_id_trajet;
 
     IF available_places <= 0 OR NEW.nombre_places_reservees > available_places THEN
