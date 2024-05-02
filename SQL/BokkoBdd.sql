@@ -18,7 +18,7 @@ CREATE TABLE profil (
                         utilisateur_id_utilisateur INT,
                         bio TEXT,
                         photo VARCHAR(255),
-                        FOREIGN KEY (utilisateur_id_utilisateur) REFERENCES Utilisateur(id)
+                        FOREIGN KEY (utilisateur_id_utilisateur) REFERENCES utilisateur(id)
 );
 drop table if exists Trajet;
 CREATE TABLE trajet (
@@ -30,7 +30,7 @@ CREATE TABLE trajet (
                         nombre_places INT not null,
                         prix FLOAT not null,
                         statut ENUM('à venir', 'en cours', 'terminé', 'annulée'),
-                        FOREIGN KEY (conducteur_id_utilisateur) REFERENCES Utilisateur(id)
+                        FOREIGN KEY (conducteur_id_utilisateur) REFERENCES utilisateur(id)
 );
 drop table if exists Reservation;
 CREATE TABLE reservation (
@@ -40,8 +40,8 @@ CREATE TABLE reservation (
                         nombre_places_reservees INT,
                         date_reservation datetime not null,
                         statut ENUM('en attente', 'confirmé', 'fini'),
-                        FOREIGN KEY (trajet_id_trajet) REFERENCES Trajet(id),
-                        FOREIGN KEY (passager_id_utilisateur) REFERENCES Utilisateur(id)
+                        FOREIGN KEY (trajet_id_trajet) REFERENCES trajet(id),
+                        FOREIGN KEY (passager_id_utilisateur) REFERENCES utilisateur(id)
 );
 drop table if exists Vehicule;
 CREATE TABLE vehicule (
@@ -53,7 +53,7 @@ CREATE TABLE vehicule (
                         immatriculation VARCHAR(50),
                         annee INT,
                         used tinyint not null,
-                        FOREIGN KEY (conducteur_id_utilisateur) REFERENCES Utilisateur(id)
+                        FOREIGN KEY (conducteur_id_utilisateur) REFERENCES utilisateur(id)
 );
 drop table if exists Paiement;
 CREATE TABLE paiement (
@@ -64,8 +64,8 @@ CREATE TABLE paiement (
                         date_heure DATETIME,
                         methode ENUM('CB', 'OrangeBank'),
                         statut ENUM('en attente', 'confirmée', 'annulée'),
-                        FOREIGN KEY (reservation_id_reservation) REFERENCES Reservation(id),
-                        foreign key (utilisateur_id_utilisateur) references Utilisateur(id)
+                        FOREIGN KEY (reservation_id_reservation) REFERENCES reservation(id),
+                        foreign key (utilisateur_id_utilisateur) references utilisateur(id)
 );
 drop table if exists Avis;
 CREATE TABLE avis (
@@ -75,8 +75,8 @@ CREATE TABLE avis (
                         note INT not null,
                         commentaire TEXT,
                         date_heure DATETIME,
-                        FOREIGN KEY (reservation_id_reservation) REFERENCES Reservation(id),
-                        FOREIGN KEY (utilisateur_id_utilisateur) references Utilisateur(id)
+                        FOREIGN KEY (reservation_id_reservation) REFERENCES reservation(id),
+                        FOREIGN KEY (utilisateur_id_utilisateur) references utilisateur(id)
 );
 drop table if exists Message;
 CREATE TABLE message (
@@ -86,8 +86,8 @@ CREATE TABLE message (
                          contenu TEXT,
                          date_heure_envoi DATETIME,
                          lu BOOLEAN,
-                         FOREIGN KEY (expediteur_id_utilisateur) REFERENCES Utilisateur(id),
-                         FOREIGN KEY (destinataire_id_utilisateur) REFERENCES Utilisateur(id)
+                         FOREIGN KEY (expediteur_id_utilisateur) REFERENCES utilisateur(id),
+                         FOREIGN KEY (destinataire_id_utilisateur) REFERENCES utilisateur(id)
 );
 
 alter table utilisateur
@@ -101,7 +101,7 @@ create table session(
                         date_debut_session datetime not null,
                         date_fin_session datetime,
                         actif char(1) not null,
-                        foreign key (user_email) references Utilisateur(email)
+                        foreign key (user_email) references utilisateur(email)
 );
 
 ALTER TABLE vehicule MODIFY used tinyint NOT NULL DEFAULT 1;
