@@ -17,7 +17,7 @@ CREATE TABLE profil (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         utilisateur_id_utilisateur INT,
                         bio TEXT,
-                        photo VARCHAR(255),
+                        photo LONGTEXT,
                         FOREIGN KEY (utilisateur_id_utilisateur) REFERENCES utilisateur(id)
 );
 drop table if exists Trajet;
