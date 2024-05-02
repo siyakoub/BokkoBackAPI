@@ -12,10 +12,10 @@ public interface TrajetRepository extends JpaRepository<TrajetModel, Integer> {
 
     public TrajetModel save(TrajetModel trajetModel);
 
-    @Query(value = "select * from Trajet", nativeQuery = true)
+    @Query(value = "select * from trajet", nativeQuery = true)
     public List<TrajetModel> findAllTrajet();
 
-    @Query(value = "select * from Trajet where conducteur_id_utilisateur = :idConducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "select * from trajet where conducteur_id_utilisateur = :idConducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)
     public TrajetModel findLastTrajetByConducteur(@Param("idConducteur") int idConducteur);
 
     @Query(value = "select * from trajet where statut = 'à venir' and conducteur_id_utilisateur = :id_conducteur ORDER BY date_heure_depart DESC LIMIT 1", nativeQuery = true)

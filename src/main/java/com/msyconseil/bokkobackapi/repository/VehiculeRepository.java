@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VehiculeRepository extends JpaRepository<VehiculeModel, Integer> {
 
-    @Query(value = "select * from Vehicule", nativeQuery = true)
+    @Query(value = "select * from vehicule", nativeQuery = true)
     public List<VehiculeModel> findAllVehicule();
 
     @Query(value = "select * from vehicule where conducteur_id_utilisateur = :id", nativeQuery = true)
