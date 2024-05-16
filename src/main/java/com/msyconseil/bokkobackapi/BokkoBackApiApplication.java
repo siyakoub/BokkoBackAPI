@@ -23,7 +23,6 @@ public class BokkoBackApiApplication {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("*")
-                        .allowedOrigins("http://35.203.45.227:3000")
                         .allowedMethods("GET", "POST","PUT", "DELETE");
             }
         };
