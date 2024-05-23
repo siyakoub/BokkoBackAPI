@@ -63,3 +63,25 @@ END //
 
 DELIMITER ;
 
+DELIMITER //
+drop event if exists update_trajet_status;
+CREATE EVENT IF NOT EXISTS update_trajet_status
+    ON SCHEDULE EVERY 1 HOUR
+    DO
+    BEGIN
+        -- Met à jour les trajets qui sont en cours et dont l'heure de départ est passée d'une heure
+        UPDATE trajet
+        SET statut = 'terminé'
+        WHERE statut = 'en cours' AND TIMESTAMPDIFF(HOUR, date_heure_depart, NOW()) >= 1;
+
+        -- Met à jour les réservations associées aux trajets terminés
+        UPDATE reservation r
+            JOIN trajet t ON r.trajet_id_trajet = t.id
+        SET r.statut = 'fini'
+        WHERE t.statut = 'terminé' AND r.statut <> 'fini';
+    END //
+
+DELIMITER ;
+
+
+

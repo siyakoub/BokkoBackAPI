@@ -15,6 +15,7 @@ import com.msyconseil.bokkobackapi.service.interf.ICRUDService;
 import com.msyconseil.bokkobackapi.service.interf.IService;
 import com.msyconseil.bokkobackapi.utils.Utils;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,6 +77,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
         return response;
     }
 
+    @Override
     public CustomAnswer<UserDTO> delete(final Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) {
             throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
@@ -178,6 +180,7 @@ public class UserService extends AbstractService<UserDTO, UserModel> implements 
     }
 
 
+    @Override
     public CustomAnswer<UserDTO> add(final Map<String, String> headers, UserDTO userDTO) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         getActiveSession(headers);

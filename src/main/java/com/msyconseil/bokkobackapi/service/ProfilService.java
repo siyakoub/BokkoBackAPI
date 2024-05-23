@@ -168,9 +168,11 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
         return response;
     }
 
-    public UserModel getUserByEmail(String email){
+    public UserModel getUserByEmailAndActif(String email){
         return userRepository.findByEmailAndActive(email);
     }
+
+    public UserModel getUserByEmail(String email) { return userRepository.findByEmail(email); }
 
     @Override
     public CustomAnswer<ProfilDTO> delete(final Map<String, String> headers, String email) throws ErrorException {
@@ -179,7 +181,7 @@ public class ProfilService extends AbstractService<ProfilDTO, ProfilModel> imple
         CustomAnswer<ProfilDTO> response = new CustomAnswer<>();
         try {
             SessionModel sessionModel = getActiveSession(headers);
-            UserModel userModel = getUserByEmail(email);
+            UserModel userModel = getUserByEmailAndActif(email);
             if (Objects.equals(email, sessionModel.getUserModel().getEmail())) {
                 ProfilModel profilModel = getProfilByUser(userModel.getId());
                 if (profilModel != null) {
