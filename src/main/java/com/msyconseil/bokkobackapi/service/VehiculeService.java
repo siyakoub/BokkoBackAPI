@@ -159,20 +159,30 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
 
     @Override
     public CustomAnswer<VehiculeDTO> update(Map<String, String> headers, VehiculeDTO parameter, String email) throws ErrorException {
-        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers == null || headers.isEmpty()) {
+            throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        }
+
         CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
         try {
             getActiveSession(headers);
+
             VehiculeModel vehiculeModel = getVehiculeByIdActif(parameter.getId());
-            if (vehiculeModel != null) {
-                updateInformation(vehiculeModel, parameter);
-                vehiculeModel = vehiculeRepository.save(vehiculeModel);
-                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
-                response.setContent(vehiculeDTO);
+            if (vehiculeModel == null) {
+                throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
             }
+
+            updateInformation(vehiculeModel, parameter);
+            vehiculeModel = vehiculeRepository.save(vehiculeModel);
+
+            VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+            response.setContent(vehiculeDTO);
+
+        } catch (ErrorException e) {
+            response.setErrorMessage(e.getMessage());
         } catch (Exception e) {
             e.fillInStackTrace();
-            response.setErrorMessage(e.getMessage());
+            response.setErrorMessage("An unexpected error occurred: " + e.getMessage());
         }
         return response;
     }
@@ -201,14 +211,13 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         return null;
     }
 
-    private void updateInformation(VehiculeModel vehiculeModel, VehiculeDTO vehiculeDTO) {
-        vehiculeModel.setMarque(vehiculeDTO.getMarque());
-        vehiculeModel.setModele(vehiculeDTO.getModele());
-        vehiculeModel.setCouleur(vehiculeDTO.getCouleur());
-        vehiculeModel.setAnnee(vehiculeDTO.getAnnee());
-        vehiculeModel.setImmatriculation(vehiculeDTO.getImmatriculation());
-        vehiculeModel.setUsed(vehiculeDTO.getUsed());
-        vehiculeModel.setId(vehiculeDTO.getId());
+    private void updateInformation(VehiculeModel vehiculeModel, VehiculeDTO parameter) {
+        vehiculeModel.setMarque(parameter.getMarque());
+        vehiculeModel.setModele(parameter.getModele());
+        vehiculeModel.setCouleur(parameter.getCouleur());
+        vehiculeModel.setImmatriculation(parameter.getImmatriculation());
+        vehiculeModel.setAnnee(parameter.getAnnee());
+        vehiculeModel.setUsed(parameter.getUsed());
     }
 
     @Override
