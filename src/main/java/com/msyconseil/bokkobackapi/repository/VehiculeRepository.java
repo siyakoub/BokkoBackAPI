@@ -27,6 +27,9 @@ public interface VehiculeRepository extends JpaRepository<VehiculeModel, Integer
     @Query(value = "select * from vehicule where used = 1", nativeQuery = true)
     public List<VehiculeModel> findAllVehiculeActif();
 
+    @Query(value = "select * from Vehicule where used = 1 and id = :idVehicule", nativeQuery = true)
+    public VehiculeModel findByIdAndActif(@Param("idVehicule") int idVehicule);
+
     @Query(value = "select * from vehicule where id = :id", nativeQuery = true)
     public VehiculeModel findById(@Param("id") int id);
 

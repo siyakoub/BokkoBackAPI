@@ -46,6 +46,10 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         return vehiculeRepository.findLastVehiculeByDriverActif(idConducteur);
     }
 
+    public VehiculeModel getVehiculeByIdActif(int idVehicule) {
+        return vehiculeRepository.findByIdAndActif(idVehicule);
+    }
+
     @Transactional
     public VehiculeDTO add(VehiculeDTO vehiculeDTO) throws ErrorException {
         if (vehiculeDTO == null) {
@@ -158,8 +162,8 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
         try {
-            SessionModel sessionModel = getActiveSession(headers);
-            VehiculeModel vehiculeModel = getLastVehiculeByDriverActif(sessionModel.getUserModel().getId());
+            getActiveSession(headers);
+            VehiculeModel vehiculeModel = getVehiculeByIdActif(parameter.getId());
             if (vehiculeModel != null) {
                 updateInformation(vehiculeModel, parameter);
                 vehiculeModel = vehiculeRepository.save(vehiculeModel);
