@@ -208,7 +208,7 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
             e.fillInStackTrace();
             response.setErrorMessage(e.getMessage());
         }
-        return null;
+        return response;
     }
 
     private void updateInformation(VehiculeModel vehiculeModel, VehiculeDTO parameter) {
@@ -217,7 +217,6 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         vehiculeModel.setCouleur(parameter.getCouleur());
         vehiculeModel.setImmatriculation(parameter.getImmatriculation());
         vehiculeModel.setAnnee(parameter.getAnnee());
-        vehiculeModel.setUsed(parameter.getUsed());
     }
 
     @Override
