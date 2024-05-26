@@ -74,6 +74,28 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         return generateDTOByEntity(vehiculeRepository.save(vehiculeModel));
     }
 
+    public CustomAnswer<VehiculeDTO> getById(Map<String, String> headers, String email, int id) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers.get("token") == null || headers.get("token").isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+        CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            VehiculeModel vehiculeModel = getVehiculeByIdActif(id);
+            if (vehiculeModel != null) {
+                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                vehiculeDTO.setId(vehiculeModel.getId());
+                vehiculeDTO.setUsed(vehiculeModel.getUsed());
+                response.setContent(vehiculeDTO);
+            } else {
+                throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
     @Override
     public CustomAnswer<VehiculeDTO> get(Map<String, String> headers, String email) throws ErrorException {
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
@@ -86,6 +108,8 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
                 vehiculeDTO.setId(vehiculeModel.getId());
                 vehiculeDTO.setUsed(vehiculeModel.getUsed());
                 response.setContent(vehiculeDTO);
+            } else {
+                throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
             }
         } catch (Exception e) {
             e.fillInStackTrace();
