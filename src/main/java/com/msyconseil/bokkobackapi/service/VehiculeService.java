@@ -168,8 +168,6 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
                 updateInformation(vehiculeModel, parameter);
                 vehiculeModel = vehiculeRepository.save(vehiculeModel);
                 VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
-                vehiculeDTO.setUsed(vehiculeModel.getUsed());
-                vehiculeDTO.setId(vehiculeModel.getId());
                 response.setContent(vehiculeDTO);
             }
         } catch (Exception e) {
@@ -209,6 +207,8 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         vehiculeModel.setCouleur(vehiculeDTO.getCouleur());
         vehiculeModel.setAnnee(vehiculeDTO.getAnnee());
         vehiculeModel.setImmatriculation(vehiculeDTO.getImmatriculation());
+        vehiculeModel.setUsed(vehiculeDTO.getUsed());
+        vehiculeModel.setId(vehiculeDTO.getId());
     }
 
     @Override
