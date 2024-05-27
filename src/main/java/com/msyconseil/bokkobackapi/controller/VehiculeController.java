@@ -24,6 +24,11 @@ public class VehiculeController {
         return vehiculeService.add(headers, vehiculeDTO);
     }
 
+    @GetMapping("/withid")
+    public CustomAnswer<VehiculeDTO> getById(@RequestHeader final Map<String, String> headers, @RequestParam String email, @RequestParam int id) throws ErrorException {
+        return vehiculeService.getById(headers, email, id);
+    }
+
     @GetMapping("/all")
     public CustomListAnswer<List<VehiculeDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, @RequestParam int size) throws ErrorException, VehiculeException {
         return vehiculeService.getAll(headers, page, size);

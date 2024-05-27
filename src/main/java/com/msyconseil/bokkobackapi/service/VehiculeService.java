@@ -80,14 +80,18 @@ public class VehiculeService extends AbstractService<VehiculeDTO, VehiculeModel>
         CustomAnswer<VehiculeDTO> response = new CustomAnswer<>();
         try {
             SessionModel sessionModel = getActiveSession(headers);
-            VehiculeModel vehiculeModel = getVehiculeByIdActif(id);
-            if (vehiculeModel != null) {
-                VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
-                vehiculeDTO.setId(vehiculeModel.getId());
-                vehiculeDTO.setUsed(vehiculeModel.getUsed());
-                response.setContent(vehiculeDTO);
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                VehiculeModel vehiculeModel = getVehiculeByIdActif(id);
+                if (vehiculeModel != null) {
+                    VehiculeDTO vehiculeDTO = generateDTOByEntity(vehiculeModel);
+                    vehiculeDTO.setId(vehiculeModel.getId());
+                    vehiculeDTO.setUsed(vehiculeModel.getUsed());
+                    response.setContent(vehiculeDTO);
+                } else {
+                    throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+                }
             } else {
-                throw new VehiculeException(VehiculeMessageEnum.NOT_FOUND);
+                throw new Exception("TOKEN ou EMAIL invalid...");
             }
         } catch (Exception e) {
             e.fillInStackTrace();
