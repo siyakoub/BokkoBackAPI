@@ -21,12 +21,10 @@ public class BokkoBackApiApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                        .allowedOrigins("https://app.bokyon-app.com")
+                registry.addMapping("/**")
                         .allowedOrigins("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowedOrigins("https://app.bokyon-app.com/")
+                        .allowedMethods("GET", "POST","PUT", "DELETE");
             }
         };
     }
