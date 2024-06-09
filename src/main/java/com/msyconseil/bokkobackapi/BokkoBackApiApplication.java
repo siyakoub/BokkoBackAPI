@@ -22,9 +22,9 @@ public class BokkoBackApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedOrigins("https://app.bokyon-app.com/")
-                        .allowedMethods("GET", "POST","PUT", "DELETE");
+                        .allowedOrigins("*", "https://app.bokyon-app.com/")
+                        .allowedMethods("GET", "POST","PUT", "DELETE")
+                        .allowCredentials(true);
             }
         };
     }

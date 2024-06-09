@@ -20,36 +20,43 @@ public class ProfilController {
     @Autowired
     ProfilService profilService;
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @PostMapping("/")
     public CustomAnswer<ProfilDTO> add(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO) throws ErrorException {
         return profilService.add(headers, profilDTO);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @PutMapping("/")
     public CustomAnswer<ProfilDTO> update(@RequestHeader final Map<String, String> headers, @RequestBody ProfilDTO profilDTO, @RequestParam String email) throws ErrorException {
         return profilService.update(headers, profilDTO, email);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @DeleteMapping("/")
     public CustomAnswer<ProfilDTO> delete(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
         return profilService.delete(headers, email);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @GetMapping("/")
     public CustomAnswer<ProfilDTO> get(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
         return profilService.get(headers, email);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @GetMapping("/getaprofil")
     public CustomAnswer<ProfilDTO> getAProfil(@RequestHeader final Map<String, String> headers, @RequestParam String email) throws ErrorException {
         return profilService.getAProfil(headers, email);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @GetMapping("/all")
     public CustomListAnswer<List<ProfilDTO>> getAll(@RequestHeader final Map<String, String> headers, @RequestParam int page, int size) throws ErrorException {
         return profilService.getAll(headers, page, size);
     }
 
+    @CrossOrigin(origins = {"https://app.bokyon-app.com", "*"})
     @PostMapping("/register")
     public CustomAnswer<ProfilRegisterDTO> register(@RequestBody ProfilRegisterDTO profilRegisterDTO) {
         return profilService.register(profilRegisterDTO);
