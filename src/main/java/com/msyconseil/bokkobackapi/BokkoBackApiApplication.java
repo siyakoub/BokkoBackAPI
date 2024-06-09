@@ -22,8 +22,7 @@ public class BokkoBackApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedMethods("GET", "POST","PUT", "DELETE")
-                        .allowCredentials(true);
+                        .allowedMethods("GET", "POST","PUT", "DELETE");
             }
         };
     }
