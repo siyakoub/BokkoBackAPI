@@ -232,6 +232,34 @@ public class TrajetService extends AbstractService<TrajetDTO, TrajetModel> imple
         return response;
     }
 
+    public CustomListAnswer<List<TrajetDTO>> getAllToBecome(final Map<String, String> headers, String email) throws ErrorException {
+        if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
+        if (headers.get("token") == null || headers.get("token").isEmpty()) throw new ErrorException(ErrorMessageEnum.INVALID_TOKEN);
+        CustomListAnswer<List<TrajetDTO>> response = new CustomListAnswer<>();
+        try {
+            SessionModel sessionModel = getActiveSession(headers);
+            List<TrajetDTO> list = new LinkedList<>();
+            if (Objects.equals(sessionModel.getUserModel().getEmail(), email)) {
+                for (TrajetModel trajetModel : getAllTrajetByStatutToBecome()) {
+                    TrajetDTO trajetDTO = generateDTOByEntity(trajetModel);
+                    trajetDTO.setId(trajetModel.getId());
+                    list.add(trajetDTO);
+                }
+                if (list.isEmpty()) {
+                    throw new TrajetException(TrajetMessageEnum.NOT_FOUND);
+                } else {
+                    response.setContent(list);
+                }
+            } else {
+                throw new Exception("Le token n'appartient pas à cette utilisateur...");
+            }
+        } catch (Exception e) {
+            e.fillInStackTrace();
+            response.setErrorMessage(e.getMessage());
+        }
+        return response;
+    }
+
     public CustomListAnswer<List<TrajetDTO>> getAllByDriver(final Map<String, String> headers, String email) throws ErrorException{
         if (headers == null || headers.isEmpty()) throw new ErrorException(ErrorMessageEnum.ACTION_UNAUTHORISED_ERROR);
         CustomListAnswer<List<TrajetDTO>> response = new CustomListAnswer<>();
