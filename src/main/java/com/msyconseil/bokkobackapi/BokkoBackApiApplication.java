@@ -22,7 +22,6 @@ public class BokkoBackApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*", "https://app.bokyon-app.com/")
                         .allowedMethods("GET", "POST","PUT", "DELETE")
                         .allowCredentials(true);
             }
